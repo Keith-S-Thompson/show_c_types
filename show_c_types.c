@@ -65,7 +65,7 @@
 typedef enum { false, true } bool;
 #endif
 
-#define IS_SIGNED(type)  ((type)-1 < (type)0)
+#define IS_SIGNED(type) ((type)-1 < (type)0)
 
 #define ALIGNOF(type) ((int)(offsetof(struct {char c; type t;}, t)))
 
@@ -91,13 +91,33 @@ static long double ld_one_million   = 1.0e6L;
 enum small_enum { se_zero, se_one, se_two };
 enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
 
-#define SHOW_INTEGER_TYPE(type, endianness)                           \
+#define SHOW_INTEGER_TYPE(type, endianness, min, max)                 \
     do {                                                              \
         const int size = sizeof(type) * CHAR_BIT;                     \
         const int align = ALIGNOF(type) * CHAR_BIT;                   \
         puts("    {");                                                \
         printf("        \"name\" : \"%s\",\n", #type);                \
         printf("        \"size\" : %d,\n", size);                     \
+        if (min != 0) {                                               \
+            if (IS_SIGNED(type)) {                                    \
+                printf("        \"min\" : %s,\n",                     \
+                       signed_image((longest_signed)min));            \
+            }                                                         \
+            else {                                                    \
+                printf("        \"min\" : %s,\n",                     \
+                       unsigned_image((longest_unsigned)min));        \
+            }                                                         \
+        }                                                             \
+        if (max != 0) {                                               \
+            if (IS_SIGNED(type)) {                                    \
+                printf("        \"max\" : %s,\n",                     \
+                       signed_image((longest_signed)max));            \
+            }                                                         \
+            else {                                                    \
+                printf("        \"max\" : %s,\n",                     \
+                       unsigned_image((longest_unsigned)max));        \
+            }                                                         \
+        }                                                             \
         printf("        \"signedness\" : \"%s\",\n",                  \
                (IS_SIGNED(type) ? "signed" : "unsigned"));            \
         if (endianness != NULL) {                                     \
@@ -216,6 +236,30 @@ declare_endianness_function(clock_t,            clock_t_endianness)
 
 typedef void(*simple_func_ptr)(void);
 typedef double(*complex_func_ptr)(int*,char**);
+
+#ifdef INTMAX_T_EXISTS
+typedef intmax_t longest_signed;
+typedef uintmax_t longest_unsigned;
+#define longest_signed_format "%jd"
+#define longest_unsigned_format "%ju"
+#else
+typedef long longest_signed;
+typedef unsigned long longest_unsigned;
+#define longest_signed_format "%ld"
+#define longest_unsigned_format "%lu"
+#endif
+
+static char *signed_image(longest_signed n) {
+    static char result[CHAR_BIT * sizeof (longest_signed)];
+    sprintf(result, longest_signed_format, n);
+    return result;
+}
+
+static char *unsigned_image(longest_unsigned n) {
+    static char result[CHAR_BIT * sizeof (longest_unsigned)];
+    sprintf(result, longest_unsigned_format, n);
+    return result;
+}
 
 static char *system_configuration(void) {
     FILE *f;
@@ -372,35 +416,35 @@ int main(void)
     puts("    },");
 
 #ifdef BOOL_EXISTS
-    SHOW_INTEGER_TYPE(bool, bool_endianness());
+    SHOW_INTEGER_TYPE(bool, bool_endianness(), 0, 0);
 #endif
 
-    SHOW_INTEGER_TYPE(enum small_enum, small_enum_endianness());
-    SHOW_INTEGER_TYPE(enum small_signed_enum, small_signed_enum_endianness());
+    SHOW_INTEGER_TYPE(enum small_enum, small_enum_endianness(), 0, 0);
+    SHOW_INTEGER_TYPE(enum small_signed_enum, small_signed_enum_endianness(), 0, 0);
 
-    SHOW_INTEGER_TYPE(char, char_endianness());
+    SHOW_INTEGER_TYPE(char, char_endianness(), CHAR_MIN, CHAR_MAX);
 #ifdef SIGNED_CHAR_EXISTS
-    SHOW_INTEGER_TYPE(signed char, signed_char_endianness());
+    SHOW_INTEGER_TYPE(signed char, signed_char_endianness(), SCHAR_MIN, SCHAR_MAX);
 #endif
-    SHOW_INTEGER_TYPE(unsigned char, unsigned_char_endianness());
+    SHOW_INTEGER_TYPE(unsigned char, unsigned_char_endianness(), 0, UCHAR_MAX);
 
-    SHOW_INTEGER_TYPE(short, short_endianness());
-    SHOW_INTEGER_TYPE(unsigned short, unsigned_short_endianness());
+    SHOW_INTEGER_TYPE(short, short_endianness(), SHRT_MIN, SHRT_MAX);
+    SHOW_INTEGER_TYPE(unsigned short, unsigned_short_endianness(), 0, USHRT_MAX);
 
-    SHOW_INTEGER_TYPE(int, int_endianness());
-    SHOW_INTEGER_TYPE(unsigned, unsigned_endianness());
+    SHOW_INTEGER_TYPE(int, int_endianness(), INT_MIN, INT_MAX);
+    SHOW_INTEGER_TYPE(unsigned, unsigned_endianness(), 0, UINT_MAX);
 
-    SHOW_INTEGER_TYPE(long, long_endianness());
-    SHOW_INTEGER_TYPE(unsigned long, unsigned_long_endianness());
+    SHOW_INTEGER_TYPE(long, long_endianness(), LONG_MIN, LONG_MAX);
+    SHOW_INTEGER_TYPE(unsigned long, unsigned_long_endianness(), 0, ULONG_MAX);
 
 #ifdef LONG_LONG_EXISTS
-    SHOW_INTEGER_TYPE(long long, long_long_endianness());
-    SHOW_INTEGER_TYPE(unsigned long long, unsigned_long_long_endianness());
+    SHOW_INTEGER_TYPE(long long, long_long_endianness(), LLONG_MIN, LLONG_MAX);
+    SHOW_INTEGER_TYPE(unsigned long long, unsigned_long_long_endianness(), 0, ULONG_MAX);
 #endif
 
 #ifdef INTMAX_T_EXISTS
-    SHOW_INTEGER_TYPE(intmax_t, intmax_t_endianness());
-    SHOW_INTEGER_TYPE(uintmax_t, uintmax_t_endianness());
+    SHOW_INTEGER_TYPE(intmax_t, intmax_t_endianness(), INTMAX_MIN, INTMAX_MAX);
+    SHOW_INTEGER_TYPE(uintmax_t, uintmax_t_endianness(), 0, UINTMAX_MAX);
 #endif
 
     SHOW_FLOATING_TYPE(float,       FLT_MANT_DIG,  FLT_MIN_EXP,  FLT_MAX_EXP,
@@ -412,12 +456,41 @@ int main(void)
                                     ld_one, ld_minus_sixteen, ld_one_million);
 #endif
 
-    SHOW_INTEGER_TYPE(ptrdiff_t, ptrdiff_t_endianness());
-    SHOW_INTEGER_TYPE(size_t, size_t_endianness());
-    SHOW_INTEGER_TYPE(wchar_t, wchar_t_endianness());
+#ifdef PTRDIFF_MIN
+#define PTRDIFF__MIN PTRDIFF_MIN
+#else
+#define PTRDIFF__MIN 0
+#endif
+#ifdef PTRDIFF_MAX
+#define PTRDIFF__MAX PTRDIFF_MAX
+#else
+#define PTRDIFF__MAX 0
+#endif
 
-    SHOW_INTEGER_TYPE(time_t, time_t_endianness());
-    SHOW_INTEGER_TYPE(clock_t, clock_t_endianness());
+#ifdef SIZE_MAX
+#define SIZE__MAX SIZE_MAX
+#else
+#define SIZE__MAX 0
+#endif
+
+#ifdef WCHAR_MIN
+#define WCHAR__MIN WCHAR_MIN
+#else
+#define WCHAR__MIN 0
+#endif
+#ifdef WCHAR_MAX
+#define WCHAR__MAX WCHAR_MAX
+#else
+#define WCHAR__MAX 0
+#endif
+
+
+    SHOW_INTEGER_TYPE(ptrdiff_t, ptrdiff_t_endianness(), PTRDIFF__MIN, PTRDIFF__MAX);
+    SHOW_INTEGER_TYPE(size_t, size_t_endianness(), 0, SIZE__MAX);
+    SHOW_INTEGER_TYPE(wchar_t, wchar_t_endianness(), WCHAR__MIN, WCHAR__MAX);
+
+    SHOW_INTEGER_TYPE(time_t, time_t_endianness(), 0, 0);
+    SHOW_INTEGER_TYPE(clock_t, clock_t_endianness(), 0, 0);
     SHOW_RAW_TYPE(struct tm);
 
     SHOW_RAW_TYPE(void*);
