@@ -5,27 +5,27 @@
         "arg-3" : "compile_command=gcc -std=c99"
     },
     {
-        "name" : "bool",
+        "type" : "bool",
         "size" : 8,
         "signedness" : "unsigned",
         "alignment" : 8
     },
     {
-        "name" : "enum small_enum",
+        "type" : "enum small_enum",
         "size" : 32,
         "signedness" : "unsigned",
         "endianness" : "little-endian",
         "alignment" : 32
     },
     {
-        "name" : "enum small_signed_enum",
+        "type" : "enum small_signed_enum",
         "size" : 32,
         "signedness" : "signed",
         "endianness" : "little-endian",
         "alignment" : 32
     },
     {
-        "name" : "char",
+        "type" : "char",
         "size" : 8,
         "min" : -128,
         "max" : 127,
@@ -33,7 +33,7 @@
         "alignment" : 8
     },
     {
-        "name" : "signed char",
+        "type" : "signed char",
         "size" : 8,
         "min" : -128,
         "max" : 127,
@@ -41,14 +41,14 @@
         "alignment" : 8
     },
     {
-        "name" : "unsigned char",
+        "type" : "unsigned char",
         "size" : 8,
         "max" : 255,
         "signedness" : "unsigned",
         "alignment" : 8
     },
     {
-        "name" : "short",
+        "type" : "short",
         "size" : 16,
         "min" : -32768,
         "max" : 32767,
@@ -57,7 +57,7 @@
         "alignment" : 16
     },
     {
-        "name" : "unsigned short",
+        "type" : "unsigned short",
         "size" : 16,
         "max" : 65535,
         "signedness" : "unsigned",
@@ -65,7 +65,7 @@
         "alignment" : 16
     },
     {
-        "name" : "int",
+        "type" : "int",
         "size" : 32,
         "min" : -2147483648,
         "max" : 2147483647,
@@ -74,7 +74,7 @@
         "alignment" : 32
     },
     {
-        "name" : "unsigned",
+        "type" : "unsigned",
         "size" : 32,
         "max" : 4294967295,
         "signedness" : "unsigned",
@@ -82,7 +82,7 @@
         "alignment" : 32
     },
     {
-        "name" : "long",
+        "type" : "long",
         "size" : 32,
         "min" : -2147483648,
         "max" : 2147483647,
@@ -91,7 +91,7 @@
         "alignment" : 32
     },
     {
-        "name" : "unsigned long",
+        "type" : "unsigned long",
         "size" : 32,
         "max" : 4294967295,
         "signedness" : "unsigned",
@@ -99,7 +99,7 @@
         "alignment" : 32
     },
     {
-        "name" : "long long",
+        "type" : "long long",
         "size" : 64,
         "min" : -9223372036854775808,
         "max" : 9223372036854775807,
@@ -108,7 +108,7 @@
         "alignment" : 32
     },
     {
-        "name" : "unsigned long long",
+        "type" : "unsigned long long",
         "size" : 64,
         "max" : 4294967295,
         "signedness" : "unsigned",
@@ -116,7 +116,7 @@
         "alignment" : 32
     },
     {
-        "name" : "intmax_t",
+        "type" : "intmax_t",
         "size" : 64,
         "min" : -9223372036854775808,
         "max" : 9223372036854775807,
@@ -125,7 +125,7 @@
         "alignment" : 32
     },
     {
-        "name" : "uintmax_t",
+        "type" : "uintmax_t",
         "size" : 64,
         "max" : 18446744073709551615,
         "signedness" : "unsigned",
@@ -133,7 +133,7 @@
         "alignment" : 32
     },
     {
-        "name" : "float",
+        "type" : "float",
         "size" : 32,
         "alignment" : 32,
         "mantissa_bits" : 24,
@@ -142,7 +142,7 @@
         "looks_like" : "32-bit IEEE, little-endian"
     },
     {
-        "name" : "double",
+        "type" : "double",
         "size" : 64,
         "alignment" : 32,
         "mantissa_bits" : 53,
@@ -151,7 +151,7 @@
         "looks_like" : "64-bit IEEE, little-endian"
     },
     {
-        "name" : "long double",
+        "type" : "long double",
         "size" : 96,
         "alignment" : 32,
         "mantissa_bits" : 64,
@@ -160,7 +160,7 @@
         "looks_like" : "96-bit IEEE, little-endian"
     },
     {
-        "name" : "ptrdiff_t",
+        "type" : "ptrdiff_t",
         "size" : 32,
         "min" : -2147483648,
         "max" : 2147483647,
@@ -169,7 +169,7 @@
         "alignment" : 32
     },
     {
-        "name" : "size_t",
+        "type" : "size_t",
         "size" : 32,
         "max" : 4294967295,
         "signedness" : "unsigned",
@@ -177,7 +177,7 @@
         "alignment" : 32
     },
     {
-        "name" : "wchar_t",
+        "type" : "wchar_t",
         "size" : 32,
         "min" : -2147483648,
         "max" : 2147483647,
@@ -186,56 +186,56 @@
         "alignment" : 32
     },
     {
-        "name" : "time_t",
+        "type" : "time_t",
         "size" : 32,
         "signedness" : "signed",
         "endianness" : "little-endian",
         "alignment" : 32
     },
     {
-        "name" : "clock_t",
+        "type" : "clock_t",
         "size" : 32,
         "signedness" : "signed",
         "endianness" : "little-endian",
         "alignment" : 32
     },
     {
-        "name" : "struct tm",
+        "type" : "struct tm",
         "size" : 352,
         "alignment" : 32
     },
     {
-        "name" : "void*",
+        "type" : "void*",
         "size" : 32,
         "alignment" : 32
     },
     {
-        "name" : "char*",
+        "type" : "char*",
         "size" : 32,
         "alignment" : 32
     },
     {
-        "name" : "int*",
+        "type" : "int*",
         "size" : 32,
         "alignment" : 32
     },
     {
-        "name" : "double*",
+        "type" : "double*",
         "size" : 32,
         "alignment" : 32
     },
     {
-        "name" : "struct{int x;}*",
+        "type" : "struct{int x;}*",
         "size" : 32,
         "alignment" : 32
     },
     {
-        "name" : "void(*)(void)",
+        "type" : "void(*)(void)",
         "size" : 32,
         "alignment" : 32
     },
     {
-        "name" : "double(*)(int*,char**)",
+        "type" : "double(*)(int*,char**)",
         "size" : 32,
         "alignment" : 32
     },
