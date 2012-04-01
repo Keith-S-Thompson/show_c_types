@@ -44,6 +44,12 @@
  * bool is supported.
  */
 
+/*
+ * TODO: Don't assume that time_t and clock_t are integer types.
+ * TODO: Check for representation of negative integers
+ * (2's-complement, 1s'-complement, sign-and-magnitude).
+ */
+
 #ifdef SCHAR_MAX
 #define SIGNED_CHAR_EXISTS
 #endif
