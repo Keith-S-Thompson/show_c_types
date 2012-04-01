@@ -9,7 +9,8 @@ It's based on an earlier unreleased program that prints similar
 information in plain text.
 
 You may need to modify the `Makefile` to adjust the compiler command
-as appropriate for your system.
+as appropriate for your system.  See the header comment block there
+for details.
 
 To build:
 
@@ -23,7 +24,8 @@ or
 
     make output
 
-This should generate a new file `output.json`.
+This should generate a new file `output.json`.  (Run `make clean` first
+if necessary, e.g., if you've edited the `Makefile`.)
 
 If you've run this on a system for which I don't already have results
 in the `results` directory, please e-mail your `output.json` file as
