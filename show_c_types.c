@@ -233,9 +233,11 @@ static char *system_configuration(void) {
         return "unknown";
     }
     fclose(f);
-    char *newline = strchr(result, '\n');
-    if (newline != NULL) {
-        *newline = '\0';
+    {
+        char *const newline = strchr(result, '\n');
+        if (newline != NULL) {
+            *newline = '\0';
+        }
     }
     return result;
 } /* system_configuration */
