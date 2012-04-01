@@ -261,29 +261,6 @@ static char *unsigned_image(longest_unsigned n) {
     return result;
 }
 
-static char *system_configuration(void) {
-    FILE *f;
-    static char result[256];
-
-    remove("config.txt");
-    system("sh ./config.guess > config.txt");
-
-    f = fopen("config.txt", "r");
-    if (f == NULL) {
-        return "unknown";
-    }
-    if (fgets(result, sizeof result, f) == NULL) {
-        fclose(f);
-        return "unknown";
-    }
-    fclose(f);
-    char *newline = strchr(result, '\n');
-    if (newline != NULL) {
-        *newline = '\0';
-    }
-    return result;
-} /* system_configuration */
-
 static void check_size(char *kind, bool sizes[], int size)
 {
     if (! sizes[size]) {
@@ -411,9 +388,6 @@ static char *floating_looks_like(char *one, char *minus_sixteen, char *one_milli
 int main(void)
 {
     puts("[");
-    puts("    {");
-    printf("    \"config\" : \"%s\"\n", system_configuration());
-    puts("    },");
 
 #ifdef BOOL_EXISTS
     SHOW_INTEGER_TYPE(bool, bool_endianness(), 0, 0);
