@@ -30,40 +30,13 @@
 #include <time.h>
 
 /*
- * Some very old compilers (VAXC, for example) might not support some
- * of the following types:
- *     signed char
- *     long long
- *     unsigned long long
- *     long double
- * We assume that we can detect this by checking the appropriate macros
- * in <limits.h> and <float.h>.  We further assume that unsigned long long
- * exists if and only if long long exists.
+ * We try to use predefined macro values to determine characteristics
+ * of the system.  In some cases, these tests can fail.  For example,
+ * some compilers might support long long even though they don't define
+ * __STDC_VERSION__ to the proper value; other very old compilers might
+ * not support signed char or long double.
  *
- * We also assume that the value of __STDC_VERSION__ determines whether
- * bool is supported.
- *
- * Some C compiler support certain predefined types without setting __STD_C_VERSION__
- * to the appropriate value; for example, some pre-C99 compilers support "long long".
- * You can specify that such types exist by defining any of the following macros
- * (adjust the definition of CC in the Makefile):
- *     ENABLE_SIGNED_CHAR
- *     ENABLE_LONG_LONG (also enables unsigned long long)
- *     ENABLE_LONG_DOUBLE
- *     ENABLE_INTMAX_T (also enables UINTMAX_T)
- *     ENABLE_BOOL
- * You can specify that such types *don't* exist by defining any of the following macros:
- *     DISABLE_SIGNED_CHAR
- *     DISABLE_LONG_LONG (also disables unsigned long long)
- *     DISABLE_LONG_DOUBLE
- *     DISABLE_INTMAX_T (also disables UINTMAX_T)
- *     DISABLE_BOOL
- *
- * By default, we assume that time_t and clock_t are integer types.
- * Define either or both of the following macros to indicate that time_t and/or clock_t
- * are floating-point types:
- *     FLOATING_TIME_T
- *     FLOATING_CLOCK_T
+ * See the header comment in Makefile for details.
  */
 
 /*
