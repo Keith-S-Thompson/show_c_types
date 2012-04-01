@@ -385,9 +385,19 @@ static char *floating_looks_like(char *one, char *minus_sixteen, char *one_milli
     }
 } /* floating_looks_like */
 
-int main(void)
+int main(int argc, char **argv)
 {
+    int i;
+
     puts("[");
+
+    if (argc > 1) {
+        puts("    {");
+        for (i = 1; i < argc; i ++) {
+            printf("        \"arg-%d\" : \"%s\"\n", i, argv[i]);
+        }
+        puts("    },");
+    }
 
 #ifdef BOOL_EXISTS
     SHOW_INTEGER_TYPE(bool, bool_endianness(), 0, 0);
