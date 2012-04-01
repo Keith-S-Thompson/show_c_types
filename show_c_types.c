@@ -42,33 +42,113 @@
  *
  * We also assume that the value of __STDC_VERSION__ determines whether
  * bool is supported.
+ *
+ * Some C compiler support certain predefined types without setting __STD_C_VERSION__
+ * to the appropriate value; for example, some pre-C99 compilers support "long long".
+ * You can specify that such types exist by defining any of the following macros
+ * (adjust the definition of CC in the Makefile):
+ *     ENABLE_SIGNED_CHAR
+ *     ENABLE_LONG_LONG (also enables unsigned long long)
+ *     ENABLE_LONG_DOUBLE
+ *     ENABLE_INTMAX_T (also enables UINTMAX_T)
+ *     ENABLE_BOOL
+ * You can specify that such types *don't* exist by defining any of the following macros:
+ *     DISABLE_SIGNED_CHAR
+ *     DISABLE_LONG_LONG (also disables unsigned long long)
+ *     DISABLE_LONG_DOUBLE
+ *     DISABLE_INTMAX_T (also disables UINTMAX_T)
+ *     DISABLE_BOOL
+ *
+ * By default, we assume that time_t and clock_t are integer types.
+ * Define either or both of the following macros to indicate that time_t and/or clock_t
+ * are floating-point types:
+ *     FLOATING_TIME_T
+ *     FLOATING_CLOCK_T
  */
 
 /*
- * TODO: Don't assume that time_t and clock_t are integer types.
  * TODO: Check for representation of negative integers
- * (2's-complement, 1s'-complement, sign-and-magnitude).
+ *       (2's-complement, 1s'-complement, sign-and-magnitude).
+ * TODO: Add a configure step to determine more implementation
+ *       characteristics automatically.
  */
 
-#ifdef SCHAR_MAX
-#define SIGNED_CHAR_EXISTS
+#if defined(DISABLE_SIGNED_CHAR)
+#    undef SIGNED_CHAR_EXISTS
+#elif defined(ENABLE_SIGNED_CHAR)
+#    define SIGNED_CHAR_EXISTS
+#elif defined(SCHAR_MAX)
+#     define SIGNED_CHAR_EXISTS
+#else
+#     undef SIGNED_CHAR_EXISTS
 #endif
-#ifdef LLONG_MAX
-#define LONG_LONG_EXISTS
+
+#if defined(DISABLE_LONG_LONG)
+#    undef LONG_LONG_EXISTS
+#elif defined(ENABLE_LONG_LONG)
+#    define LONG_LONG_EXISTS
+#elif defined(LLONG_MAX)
+#    define LONG_LONG_EXISTS
+#else
+#    undef LONG_LONG_EXISTS
 #endif
-#ifdef LDBL_MAX
-#define LONG_DOUBLE_EXISTS
+
+#if defined(DISABLE_LONG_DOUBLE)
+#    undef LONG_DOUBLE_EXISTS
+#elif defined(ENABLE_LONG_DOUBLE)
+#    define LONG_DOUBLE_EXISTS
+#elif defined(LDBL_MAX)
+#    define LONG_DOUBLE_EXISTS
+#else
+#    undef LONG_DOUBLE_EXISTS
 #endif
-#if __STDC_VERSION__ >= 199901L
-#define BOOL_EXISTS
-#include <stdbool.h>
-#define INTMAX_T_EXISTS
-#define UINTMAX_T_EXISTS
+
+#if defined(DISABLE_BOOL)
+#    undef BOOL_EXISTS
+#elif defined(ENABLE_BOOL)
+#    define BOOL_EXISTS
+#elif __STDC_VERSION__ >= 199901L
+#    define BOOL_EXISTS
+#else
+#    undef BOOL_EXISTS
+#endif
+
+#if defined(DISABLE_INTMAX_T)
+#    undef INTMAX_T_EXISTS
+#elif defined(ENABLE_INTMAX_T)
+#    define INTMAX_T_EXISTS
+#elif __STDC_VERSION__ >= 199901L
+#    define INTMAX_T_EXISTS
+#else
+#    undef INTMAX_T_EXISTS
+#endif
+
+#ifdef INTMAX_T_EXISTS
 #include <stdint.h>
 #endif
 
-#ifndef BOOL_EXISTS
-typedef enum { false, true } bool;
+#if defined(INTMAX_T_EXISTS)
+typedef intmax_t longest_signed;
+typedef uintmax_t longest_unsigned;
+#define longest_signed_format "%jd"
+#define longest_unsigned_format "%ju"
+#elif defined(LONG_LONG_EXISTS)
+typedef long long longest_signed;
+typedef unsigned long long longest_unsigned;
+#define longest_signed_format "%lld"
+#define longest_unsigned_format "%llu"
+#else
+typedef long longest_signed;
+typedef unsigned long longest_unsigned;
+#define longest_signed_format "%ld"
+#define longest_unsigned_format "%lu"
+#endif
+
+#ifdef BOOL_EXISTS
+#include <stdbool.h>
+#else
+typedef enum { false, true } bool; /* for internal use only; we don't show
+                                      the characteristics of this enum type */
 #endif
 
 #define IS_SIGNED(type) ((type)-1 < (type)0)
@@ -82,16 +162,16 @@ static bool huge_integer = false;
 static bool float_sizes[MAX_SIZE + 1] = { false };
 static bool huge_float = false;
 
-static float       f_one            =   1.0F;
-static float       f_minus_sixteen  = -16.0F;
-static float       f_one_million    = 1.0e6F;
-static double      d_one            =   1.0;
-static double      d_minus_sixteen  = -16.0;
-static double      d_one_million    = 1.0e6;
+const static float       f_one            =   1.0F;
+const static float       f_minus_sixteen  = -16.0F;
+const static float       f_one_million    = 1.0e6F;
+const static double      d_one            =   1.0;
+const static double      d_minus_sixteen  = -16.0;
+const static double      d_one_million    = 1.0e6;
 #ifdef LONG_DOUBLE_EXISTS
-static long double ld_one           =   1.0L;
-static long double ld_minus_sixteen = -16.0L;
-static long double ld_one_million   = 1.0e6L;
+const static long double ld_one           =   1.0L;
+const static long double ld_minus_sixteen = -16.0L;
+const static long double ld_one_million   = 1.0e6L;
 #endif
 
 enum small_enum { se_zero, se_one, se_two };
@@ -102,7 +182,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         const int size = sizeof(type) * CHAR_BIT;                     \
         const int align = ALIGNOF(type) * CHAR_BIT;                   \
         puts("    {");                                                \
-        printf("        \"name\" : \"%s\",\n", #type);                \
+        printf("        \"type\" : \"%s\",\n", #type);                \
         printf("        \"size\" : %d,\n", size);                     \
         if (min != 0) {                                               \
             if (IS_SIGNED(type)) {                                    \
@@ -140,28 +220,36 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
     } while(0)
 
 #define SHOW_FLOATING_TYPE(type, mant_dig, min_exp, max_exp, one, minus_sixteen, one_million) \
-    do {                                                         \
-        const int size = sizeof(type) * CHAR_BIT;                \
-        const int align = ALIGNOF(type) * CHAR_BIT;              \
-        const char *looks_like = floating_looks_like             \
-            ( hex_image(&one, sizeof one),                       \
-              hex_image(&minus_sixteen, sizeof minus_sixteen),   \
-              hex_image(&one_million, sizeof one_million) );     \
-        puts("    {");                                           \
-        printf("        \"name\" : \"%s\",\n", #type);           \
-        printf("        \"size\" : %d,\n", size);                \
-        printf("        \"alignment\" : %d,\n", align);          \
-        printf("        \"mantissa_bits\" : %d,\n", mant_dig);   \
-        printf("        \"min_exp\" : %d,\n", min_exp);          \
-        printf("        \"max_exp\" : %d,\n", max_exp);          \
-        printf("        \"looks_like\" : \"%s\"\n", looks_like); \
-        if (size <= MAX_SIZE) {                                  \
-            float_sizes[size] = true;                            \
-        }                                                        \
-        else {                                                   \
-            huge_float = true;                                   \
-        }                                                        \
-        puts("    },");                                          \
+    do {                                                             \
+        const int size = sizeof(type) * CHAR_BIT;                    \
+        const int align = ALIGNOF(type) * CHAR_BIT;                  \
+        const char *looks_like = floating_looks_like                 \
+            ( hex_image(&one, sizeof one),                           \
+              hex_image(&minus_sixteen, sizeof minus_sixteen),       \
+              hex_image(&one_million, sizeof one_million) );         \
+        puts("    {");                                               \
+        printf("        \"type\" : \"%s\",\n", #type);               \
+        printf("        \"size\" : %d,\n", size);                    \
+        printf("        \"alignment\" : %d,\n", align);              \
+        if (mant_dig != 0) {                                         \
+            printf("        \"mantissa_bits\" : %d,\n", mant_dig);   \
+        }                                                            \
+        if (min_exp != 0) {                                          \
+            printf("        \"min_exp\" : %d,\n", min_exp);          \
+        }                                                            \
+        if (max_exp != 0) {                                          \
+            printf("        \"max_exp\" : %d,\n", max_exp);          \
+        }                                                            \
+        if (one != 0.0) {                                            \
+            printf("        \"looks_like\" : \"%s\"\n", looks_like); \
+        }                                                            \
+        if (size <= MAX_SIZE) {                                      \
+            float_sizes[size] = true;                                \
+        }                                                            \
+        else {                                                       \
+            huge_float = true;                                       \
+        }                                                            \
+        puts("    },");                                              \
     } while(0)
 
 #define SHOW_RAW_TYPE_WITH_NAME(type, name)            \
@@ -169,7 +257,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         const int size = sizeof(type) * CHAR_BIT;      \
         const int align = ALIGNOF(type) * CHAR_BIT;    \
         puts("    {");                                 \
-        printf("        \"name\" : \"%s\",\n", name);  \
+        printf("        \"type\" : \"%s\",\n", name);  \
         printf("        \"size\" : %d,\n", size);      \
         printf("        \"alignment\" : %d\n", align); \
         printf("    },\n");                            \
@@ -237,23 +325,15 @@ declare_endianness_function(uintmax_t,          uintmax_t_endianness)
 declare_endianness_function(ptrdiff_t,          ptrdiff_t_endianness)
 declare_endianness_function(size_t,             size_t_endianness)
 declare_endianness_function(wchar_t,            wchar_t_endianness)
+#ifndef FLOATING_TIME_T
 declare_endianness_function(time_t,             time_t_endianness)
+#endif
+#ifndef FLOATING_CLOCK_T
 declare_endianness_function(clock_t,            clock_t_endianness)
+#endif
 
 typedef void(*simple_func_ptr)(void);
 typedef double(*complex_func_ptr)(int*,char**);
-
-#ifdef INTMAX_T_EXISTS
-typedef intmax_t longest_signed;
-typedef uintmax_t longest_unsigned;
-#define longest_signed_format "%jd"
-#define longest_unsigned_format "%ju"
-#else
-typedef long longest_signed;
-typedef unsigned long longest_unsigned;
-#define longest_signed_format "%ld"
-#define longest_unsigned_format "%lu"
-#endif
 
 static char *signed_image(longest_signed n) {
     static char result[CHAR_BIT * sizeof (longest_signed)];
@@ -276,7 +356,7 @@ static void check_size(char *kind, bool sizes[], int size)
     }
 } /* check_size */
 
-static char *hex_image(void *base, size_t size)
+static char *hex_image(const void *base, size_t size)
 {
     /*
      * Note: This function returns a pointer to a malloc()ed buffer.
@@ -285,7 +365,7 @@ static char *hex_image(void *base, size_t size)
      */
     static char *hex = "0123456789abcdef";
     size_t i;
-    unsigned char *data = base;
+    const unsigned char *data = base;
     char *result = malloc(2 * size + 1);
     int out_index = 0;
 
@@ -479,8 +559,18 @@ int main(int argc, char **argv)
     SHOW_INTEGER_TYPE(size_t, size_t_endianness(), 0, SIZE__MAX);
     SHOW_INTEGER_TYPE(wchar_t, wchar_t_endianness(), WCHAR__MIN, WCHAR__MAX);
 
+#ifdef FLOATING_TIME_T
+    SHOW_FLOATING_TYPE(time_t, 0, 0, 0, 0.0, 0.0, 0.0);
+#else
     SHOW_INTEGER_TYPE(time_t, time_t_endianness(), 0, 0);
+#endif
+
+#ifdef FLOATING_CLOCK_T
+    SHOW_FLOATING_TYPE(clock_t, 0, 0, 0, 0.0, 0.0, 0.0);
+#else
     SHOW_INTEGER_TYPE(clock_t, clock_t_endianness(), 0, 0);
+#endif
+
     SHOW_RAW_TYPE(struct tm);
 
     SHOW_RAW_TYPE(void*);
