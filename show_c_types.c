@@ -25,6 +25,10 @@
  * Author: Keith Thompson <Keith.S.Thompson@gmail.com>
  */
 
+#ifdef __cplusplus
+#error "Please use a C compiler not a C++ compiler"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
