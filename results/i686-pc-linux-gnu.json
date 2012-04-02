@@ -110,7 +110,7 @@
     {
         "type" : "unsigned long long",
         "size" : 64,
-        "max" : 4294967295,
+        "max" : 18446744073709551615,
         "signedness" : "unsigned",
         "endianness" : "little-endian",
         "alignment" : 32
