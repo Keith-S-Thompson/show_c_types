@@ -1,0 +1,201 @@
+[
+    {
+        "arg-1" : "config.guess=sparc-sun-solaris2.9"
+        "arg-2" : "compiler=cc: Sun C 5.9 SunOS_sparc Patch 124867-16 2010/08/11"
+        "arg-3" : "compile_command=cc -Xc -xc99=%all,no%lib -m64"
+    },
+    {
+        "type" : "enum small_enum",
+        "size" : 32,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "enum small_signed_enum",
+        "size" : 32,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "char",
+        "size" : 8,
+        "min" : -128,
+        "max" : 127,
+        "signedness" : "signed",
+        "alignment" : 8
+    },
+    {
+        "type" : "signed char",
+        "size" : 8,
+        "min" : -128,
+        "max" : 127,
+        "signedness" : "signed",
+        "alignment" : 8
+    },
+    {
+        "type" : "unsigned char",
+        "size" : 8,
+        "max" : 255,
+        "signedness" : "unsigned",
+        "alignment" : 8
+    },
+    {
+        "type" : "short",
+        "size" : 16,
+        "min" : -32768,
+        "max" : 32767,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 16
+    },
+    {
+        "type" : "unsigned short",
+        "size" : 16,
+        "max" : 65535,
+        "signedness" : "unsigned",
+        "endianness" : "big-endian",
+        "alignment" : 16
+    },
+    {
+        "type" : "int",
+        "size" : 32,
+        "min" : -2147483648,
+        "max" : 2147483647,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "unsigned",
+        "size" : 32,
+        "max" : 4294967295,
+        "signedness" : "unsigned",
+        "endianness" : "big-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "long",
+        "size" : 64,
+        "min" : -9223372036854775808,
+        "max" : 9223372036854775807,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "unsigned long",
+        "size" : 64,
+        "max" : 18446744073709551615,
+        "signedness" : "unsigned",
+        "endianness" : "big-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "float",
+        "size" : 32,
+        "alignment" : 32,
+        "mantissa_bits" : 24,
+        "min_exp" : -125,
+        "max_exp" : 128,
+        "looks_like" : "32-bit IEEE, big-endian"
+    },
+    {
+        "type" : "double",
+        "size" : 64,
+        "alignment" : 64,
+        "mantissa_bits" : 53,
+        "min_exp" : -1021,
+        "max_exp" : 1024,
+        "looks_like" : "64-bit IEEE, big-endian"
+    },
+    {
+        "type" : "long double",
+        "size" : 128,
+        "alignment" : 128,
+        "mantissa_bits" : 113,
+        "min_exp" : -16381,
+        "max_exp" : 16384,
+        "looks_like" : "SPARC/HPPA-style 128-bit IEEE, big-endian"
+    },
+    {
+        "type" : "ptrdiff_t",
+        "size" : 64,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "size_t",
+        "size" : 64,
+        "signedness" : "unsigned",
+        "endianness" : "big-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "wchar_t",
+        "size" : 32,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "time_t",
+        "size" : 64,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "clock_t",
+        "size" : 64,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "struct tm",
+        "size" : 288,
+        "alignment" : 32
+    },
+    {
+        "type" : "void*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "char*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "int*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "double*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "struct{int x;}*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "void(*)(void)",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "double(*)(int*,char**)",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "comment" : "done"
+
+    }
+]
