@@ -57,8 +57,8 @@ CC=gcc -std=c99
 # CC=gcc -std=c99 -m32
 # CC=gcc -std=c99 -m64
 # For Solaris with cc:
-# CC=cc -Xc -xc99=%all,no%lib -m32
-# CC=cc -Xc -xc99=%all,no%lib -m64
+# CC=cc -Xc -xc99=%all,no%lib -m32 -DENABLE_LONG_LONG
+# CC=cc -Xc -xc99=%all,no%lib -m64 -DENABLE_LONG_LONG
 
 # CC_VERSION is a command that prints the name and version of the
 # compiler, preferably on one line.
