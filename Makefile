@@ -56,7 +56,7 @@ CC=gcc -std=c99
 
 # CC_VERSION is a command that prints the name and version of the
 # compiler, preferably on one line.
-CC_VERSION=gcc --version | head -n 1
+CC_VERSION=$(CC) --version | head -n 1
 
 # "make" with no arguments creates the executable and runs it, creating "results.json".
 
