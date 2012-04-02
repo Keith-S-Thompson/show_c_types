@@ -504,7 +504,7 @@ static char *floating_looks_like(char *one, char *minus_sixteen, char *one_milli
 #ifdef ULLONG_MAX
 #define MY_ULLONG_MAX ULLONG_MAX
 #else
-#define UMY_LLONG_MAX 0
+#define MY_ULLONG_MAX 0
 #endif
 
 #ifdef PTRDIFF_MIN
