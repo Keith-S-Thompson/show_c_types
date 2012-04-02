@@ -111,18 +111,12 @@
 #if defined(INTMAX_T_EXISTS)
 typedef intmax_t longest_signed;
 typedef uintmax_t longest_unsigned;
-#define longest_signed_format "%jd"
-#define longest_unsigned_format "%ju"
 #elif defined(LONG_LONG_EXISTS)
 typedef long long longest_signed;
 typedef unsigned long long longest_unsigned;
-#define longest_signed_format "%lld"
-#define longest_unsigned_format "%llu"
 #else
 typedef long longest_signed;
 typedef unsigned long longest_unsigned;
-#define longest_signed_format "%ld"
-#define longest_unsigned_format "%lu"
 #endif
 
 #ifdef BOOL_EXISTS
@@ -137,6 +131,9 @@ typedef enum { false, true } bool; /* for internal use only; we don't show
 #define ALIGNOF(type) ((int)(offsetof(struct {char c; type t;}, t)))
 
 #define MAX_SIZE 128
+
+static char *longest_unsigned_format;
+static char *longest_signed_format;
 
 static bool integer_sizes[MAX_SIZE + 1] = { false };
 static bool huge_integer = false;
@@ -316,6 +313,48 @@ declare_endianness_function(clock_t,            clock_t_endianness)
 typedef void(*simple_func_ptr)(void);
 typedef double(*complex_func_ptr)(int*,char**);
 
+static void set_formats(void) {
+#if defined(INTMAX_T_EXISTS)
+    char test[10];
+
+    longest_signed_format = "%jd";
+    longest_unsigned_format = "%ju";
+
+    /*
+     * Some implementations support intmax_t but not the corresponding
+     * "%jd" format.  Test whether it actually works; if not, fall back
+     * to something else.  Likewise for uintmax_t and "%ju".
+     *
+     * We assume that if long long exists, then printf supports "%lld"
+     * and "%llu".  This assumption may not always be valid.
+     */
+    sprintf(test, longest_signed_format, (longest_signed)42);
+    if (strcmp(test, "42") != 0) {
+#if defined(LONG_LONG_EXISTS)
+        longest_signed_format = "%lld";
+#else
+        longest_signed_format = "%ld";
+#endif
+    }
+
+    sprintf(test, longest_unsigned_format, (longest_unsigned)42);
+    if (strcmp(test, "42") != 0) {
+#if defined(LONG_LONG_EXISTS)
+        longest_unsigned_format = "%llu";
+#else
+        longest_unsigned_format = "%lu";
+#endif
+    }
+
+#elif defined(LONG_LONG_EXISTS)
+    longest_signed_format = "%lld";
+    longest_unsigned_format = "%llu";
+#else
+    longest_signed_format = "%ld";
+    longest_unsigned_format = "%lu";
+#endif
+}
+
 static char *signed_image(longest_signed n) {
     static char result[CHAR_BIT * sizeof (longest_signed)];
     sprintf(result, longest_signed_format, n);
@@ -452,9 +491,55 @@ static char *floating_looks_like(char *one, char *minus_sixteen, char *one_milli
     }
 } /* floating_looks_like */
 
+#ifdef LLONG_MIN
+#define MY_LLONG_MIN LLONG_MIN
+#else
+#define MY_LLONG_MIN 0
+#endif
+#ifdef LLONG_MAX
+#define MY_LLONG_MAX LLONG_MAX
+#else
+#define MY_LLONG_MAX 0
+#endif
+#ifdef ULLONG_MAX
+#define MY_ULLONG_MAX ULLONG_MAX
+#else
+#define UMY_LLONG_MAX 0
+#endif
+
+#ifdef PTRDIFF_MIN
+#define MY_PTRDIFF_MIN PTRDIFF_MIN
+#else
+#define MY_PTRDIFF_MIN 0
+#endif
+#ifdef PTRDIFF_MAX
+#define MY_PTRDIFF_MAX PTRDIFF_MAX
+#else
+#define MY_PTRDIFF_MAX 0
+#endif
+
+#ifdef SIZE_MAX
+#define MY_SIZE_MAX SIZE_MAX
+#else
+#define MY_SIZE_MAX 0
+#endif
+
+#ifdef WCHAR_MIN
+#define MY_WCHAR_MIN WCHAR_MIN
+#else
+#define MY_WCHAR_MIN 0
+#endif
+#ifdef WCHAR_MAX
+#define MY_WCHAR_MAX WCHAR_MAX
+#else
+#define MY_WCHAR_MAX 0
+#endif
+
 int main(int argc, char **argv)
 {
     int i;
+
+    set_formats();
 
     puts("[");
 
@@ -489,8 +574,8 @@ int main(int argc, char **argv)
     SHOW_INTEGER_TYPE(unsigned long, unsigned_long_endianness(), 0, ULONG_MAX);
 
 #ifdef LONG_LONG_EXISTS
-    SHOW_INTEGER_TYPE(long long, long_long_endianness(), LLONG_MIN, LLONG_MAX);
-    SHOW_INTEGER_TYPE(unsigned long long, unsigned_long_long_endianness(), 0, ULONG_MAX);
+    SHOW_INTEGER_TYPE(long long, long_long_endianness(), MY_LLONG_MIN, MY_LLONG_MAX);
+    SHOW_INTEGER_TYPE(unsigned long long, unsigned_long_long_endianness(), 0, MY_ULLONG_MAX);
 #endif
 
 #ifdef INTMAX_T_EXISTS
@@ -507,38 +592,9 @@ int main(int argc, char **argv)
                                     ld_one, ld_minus_sixteen, ld_one_million);
 #endif
 
-#ifdef PTRDIFF_MIN
-#define PTRDIFF__MIN PTRDIFF_MIN
-#else
-#define PTRDIFF__MIN 0
-#endif
-#ifdef PTRDIFF_MAX
-#define PTRDIFF__MAX PTRDIFF_MAX
-#else
-#define PTRDIFF__MAX 0
-#endif
-
-#ifdef SIZE_MAX
-#define SIZE__MAX SIZE_MAX
-#else
-#define SIZE__MAX 0
-#endif
-
-#ifdef WCHAR_MIN
-#define WCHAR__MIN WCHAR_MIN
-#else
-#define WCHAR__MIN 0
-#endif
-#ifdef WCHAR_MAX
-#define WCHAR__MAX WCHAR_MAX
-#else
-#define WCHAR__MAX 0
-#endif
-
-
-    SHOW_INTEGER_TYPE(ptrdiff_t, ptrdiff_t_endianness(), PTRDIFF__MIN, PTRDIFF__MAX);
-    SHOW_INTEGER_TYPE(size_t, size_t_endianness(), 0, SIZE__MAX);
-    SHOW_INTEGER_TYPE(wchar_t, wchar_t_endianness(), WCHAR__MIN, WCHAR__MAX);
+    SHOW_INTEGER_TYPE(ptrdiff_t, ptrdiff_t_endianness(), MY_PTRDIFF_MIN, MY_PTRDIFF_MAX);
+    SHOW_INTEGER_TYPE(size_t, size_t_endianness(), 0, MY_SIZE_MAX);
+    SHOW_INTEGER_TYPE(wchar_t, wchar_t_endianness(), MY_WCHAR_MIN, MY_WCHAR_MAX);
 
 #ifdef FLOATING_TIME_T
     SHOW_FLOATING_TYPE(time_t, 0, 0, 0, 0.0, 0.0, 0.0);
