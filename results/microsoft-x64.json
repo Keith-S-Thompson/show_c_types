@@ -110,6 +110,23 @@
         "alignment" : 64
     },
     {
+        "type" : "intmax_t",
+        "size" : 64,
+        "min" : -9223372036854775808,
+        "max" : 9223372036854775807,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "uintmax_t",
+        "size" : 64,
+        "max" : 18446744073709551615,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
         "type" : "float",
         "size" : 32,
         "alignment" : 32,
@@ -139,6 +156,8 @@
     {
         "type" : "ptrdiff_t",
         "size" : 64,
+        "min" : -9223372036854775808,
+        "max" : 9223372036854775807,
         "signedness" : "signed",
         "endianness" : "little-endian",
         "alignment" : 64
@@ -154,6 +173,7 @@
     {
         "type" : "wchar_t",
         "size" : 16,
+        "max" : 65535,
         "signedness" : "unsigned",
         "endianness" : "little-endian",
         "alignment" : 16
