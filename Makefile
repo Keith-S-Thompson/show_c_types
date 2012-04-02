@@ -53,10 +53,15 @@
 # For others, consult your compiler's documentation.
 
 CC=gcc -std=c99
+# For Solaris with cc:
+# CC=cc -Xc -xc99=%all,no%lib -m32
+# CC=cc -Xc -xc99=%all,no%lib -m64
 
 # CC_VERSION is a command that prints the name and version of the
 # compiler, preferably on one line.
 CC_VERSION=$(CC) --version | head -n 1
+# For Solaris with cc:
+# CC_VERSION=cc -V | head -n 1
 
 # "make" with no arguments creates the executable and runs it, creating "results.json".
 
