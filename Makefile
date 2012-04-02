@@ -53,6 +53,9 @@
 # For others, consult your compiler's documentation.
 
 CC=gcc -std=c99
+# For Solaris with gcc:
+# CC=gcc -std=c99 -m32
+# CC=gcc -std=c99 -m64
 # For Solaris with cc:
 # CC=cc -Xc -xc99=%all,no%lib -m32
 # CC=cc -Xc -xc99=%all,no%lib -m64
