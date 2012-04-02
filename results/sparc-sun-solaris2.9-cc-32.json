@@ -2,7 +2,7 @@
     {
         "arg-1" : "config.guess=sparc-sun-solaris2.9"
         "arg-2" : "compiler=cc: Sun C 5.9 SunOS_sparc Patch 124867-16 2010/08/11"
-        "arg-3" : "compile_command=cc -Xc -xc99=%all,no%lib -m32"
+        "arg-3" : "compile_command=cc -Xc -xc99=%all,no%lib -m32 -DENABLE_LONG_LONG"
     },
     {
         "type" : "enum small_enum",
@@ -91,6 +91,20 @@
         "signedness" : "unsigned",
         "endianness" : "big-endian",
         "alignment" : 32
+    },
+    {
+        "type" : "long long",
+        "size" : 64,
+        "signedness" : "signed",
+        "endianness" : "big-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "unsigned long long",
+        "size" : 64,
+        "signedness" : "unsigned",
+        "endianness" : "big-endian",
+        "alignment" : 64
     },
     {
         "type" : "float",
@@ -193,9 +207,6 @@
         "type" : "double(*)(int*,char**)",
         "size" : 32,
         "alignment" : 32
-    },
-    {
-        "comment" : "There is no 64-bit integer type"
     },
     {
         "comment" : "done"
