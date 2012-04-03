@@ -1,0 +1,46 @@
+char                   8 bits   signed, align   8, undefined endianness
+signed char            8 bits   signed, align   8, undefined endianness
+unsigned char          8 bits unsigned, align   8, undefined endianness
+
+short                 16 bits   signed, align  16, big-endian
+unsigned short        16 bits unsigned, align  16, big-endian
+
+int                   32 bits   signed, align  32, big-endian
+unsigned              32 bits unsigned, align  32, big-endian
+
+long                  32 bits   signed, align  32, big-endian
+unsigned long         32 bits unsigned, align  32, big-endian
+
+long long             64 bits   signed, align  64, big-endian
+unsigned long long    64 bits unsigned, align  64, big-endian
+
+float                 32 bits, align  32,
+                     mantissa is  24 bits,
+                     exponent is  8 bits, range   -125 ..    128
+        Looks like 32-bit IEEE, big-endian
+double                64 bits, align  64,
+                     mantissa is  53 bits,
+                     exponent is 11 bits, range  -1021 ..   1024
+        Looks like 64-bit IEEE, big-endian
+long double          128 bits, align  64,
+                     mantissa is 113 bits,
+                     exponent is 15 bits, range -16381 ..  16384
+        Looks like 128-bit IEEE, big-endian
+
+ptrdiff_t             32 bits   signed, align  32, big-endian
+size_t                32 bits unsigned, align  32, big-endian
+wchar_t               32 bits unsigned, align  32, big-endian
+
+time_t                32 bits   signed, align  32, big-endian
+clock_t               32 bits unsigned, align  32, big-endian
+struct tm            288 bits ( 9 words) align  32
+
+void*                 32 bits align  32
+char*                 32 bits align  32
+int*                  32 bits align  32
+double*               32 bits align  32
+struct{int x;}*       32 bits align  32
+simple_func_ptr       32 bits align  32
+        [typedef void(*simple_func_ptr)(void);]
+complex_func_ptr      32 bits align  32
+        [typedef double(*complex_func_ptr)(int*,char**);]

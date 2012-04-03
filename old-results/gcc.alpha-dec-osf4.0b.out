@@ -1,0 +1,35 @@
+char                       8 bits   signed, undefined endianness
+signed char                8 bits   signed, undefined endianness
+unsigned char              8 bits unsigned, undefined endianness
+
+short                     16 bits   signed, little-endian
+unsigned short            16 bits unsigned, little-endian
+
+int                       32 bits   signed, little-endian
+unsigned                  32 bits unsigned, little-endian
+
+long                      64 bits   signed, little-endian
+unsigned long             64 bits unsigned, little-endian
+
+long long                 64 bits   signed, little-endian
+unsigned long long        64 bits unsigned, little-endian
+
+float                     32 bits
+double                    64 bits
+long double               64 bits
+
+ptrdiff_t                 64 bits   signed, little-endian
+size_t                    64 bits unsigned, little-endian
+wchar_t                   32 bits unsigned, little-endian
+
+time_t                    32 bits   signed, little-endian
+clock_t                   32 bits   signed, little-endian
+struct tm                448 bits = 14 words
+
+void*                     64 bits
+char*                     64 bits
+int*                      64 bits
+double*                   64 bits
+struct{int x;}*           64 bits
+void(*)(void)             64 bits
+double(*)(int*,char**)    64 bits
