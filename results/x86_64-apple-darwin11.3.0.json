@@ -1,0 +1,246 @@
+[
+    {
+        "arg-1" : "config.guess=x86_64-apple-darwin11.3.0"
+        "arg-2" : "compiler=i686-apple-darwin11-llvm-gcc-4.2 (GCC) 4.2.1 (Based on Apple Inc. build 5658) (LLVM build 2336.9.00)"
+        "arg-3" : "compile_command=gcc -std=c99"
+    },
+    {
+        "type" : "bool",
+        "size" : 8,
+        "signedness" : "unsigned",
+        "alignment" : 8
+    },
+    {
+        "type" : "enum small_enum",
+        "size" : 32,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "enum small_signed_enum",
+        "size" : 32,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "char",
+        "size" : 8,
+        "min" : -128,
+        "max" : 127,
+        "signedness" : "signed",
+        "alignment" : 8
+    },
+    {
+        "type" : "signed char",
+        "size" : 8,
+        "min" : -128,
+        "max" : 127,
+        "signedness" : "signed",
+        "alignment" : 8
+    },
+    {
+        "type" : "unsigned char",
+        "size" : 8,
+        "max" : 255,
+        "signedness" : "unsigned",
+        "alignment" : 8
+    },
+    {
+        "type" : "short",
+        "size" : 16,
+        "min" : -32768,
+        "max" : 32767,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 16
+    },
+    {
+        "type" : "unsigned short",
+        "size" : 16,
+        "max" : 65535,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 16
+    },
+    {
+        "type" : "int",
+        "size" : 32,
+        "min" : -2147483648,
+        "max" : 2147483647,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "unsigned",
+        "size" : 32,
+        "max" : 4294967295,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "long",
+        "size" : 64,
+        "min" : -9223372036854775808,
+        "max" : 9223372036854775807,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "unsigned long",
+        "size" : 64,
+        "max" : 18446744073709551615,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "long long",
+        "size" : 64,
+        "min" : -9223372036854775808,
+        "max" : 9223372036854775807,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "unsigned long long",
+        "size" : 64,
+        "max" : 18446744073709551615,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "intmax_t",
+        "size" : 64,
+        "min" : -9223372036854775808,
+        "max" : 9223372036854775807,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "uintmax_t",
+        "size" : 64,
+        "max" : 18446744073709551615,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "float",
+        "size" : 32,
+        "alignment" : 32,
+        "mantissa_bits" : 24,
+        "min_exp" : -125,
+        "max_exp" : 128,
+        "looks_like" : "32-bit IEEE, little-endian"
+    },
+    {
+        "type" : "double",
+        "size" : 64,
+        "alignment" : 64,
+        "mantissa_bits" : 53,
+        "min_exp" : -1021,
+        "max_exp" : 1024,
+        "looks_like" : "64-bit IEEE, little-endian"
+    },
+    {
+        "type" : "long double",
+        "size" : 128,
+        "alignment" : 128,
+        "mantissa_bits" : 64,
+        "min_exp" : -16381,
+        "max_exp" : 16384,
+        "looks_like" : "Unrecognized floating-point format"
+    },
+    {
+        "type" : "ptrdiff_t",
+        "size" : 64,
+        "min" : -9223372036854775808,
+        "max" : 9223372036854775807,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "size_t",
+        "size" : 64,
+        "max" : 18446744073709551615,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "wchar_t",
+        "size" : 32,
+        "min" : -2147483648,
+        "max" : 2147483647,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 32
+    },
+    {
+        "type" : "time_t",
+        "size" : 64,
+        "signedness" : "signed",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "clock_t",
+        "size" : 64,
+        "signedness" : "unsigned",
+        "endianness" : "little-endian",
+        "alignment" : 64
+    },
+    {
+        "type" : "struct tm",
+        "size" : 448,
+        "alignment" : 64
+    },
+    {
+        "type" : "void*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "char*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "int*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "double*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "struct{int x;}*",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "void(*)(void)",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "type" : "double(*)(int*,char**)",
+        "size" : 64,
+        "alignment" : 64
+    },
+    {
+        "comment" : "done"
+
+    }
+]
