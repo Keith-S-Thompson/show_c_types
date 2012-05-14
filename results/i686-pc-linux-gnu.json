@@ -1,8 +1,8 @@
 [
     {
-        "arg-1" : "config.guess=i686-pc-linux-gnu"
-        "arg-2" : "compiler=gcc (Ubuntu/Linaro 4.5.2-8ubuntu4) 4.5.2"
-        "arg-3" : "compile_command=gcc -std=c99"
+        "config.guess" : "i686-pc-linux-gnu",
+        "compiler" : "gcc (Ubuntu/Linaro 4.5.2-8ubuntu4) 4.5.2",
+        "compile_command" : "gcc -std=c99"
     },
     {
         "type" : "bool",

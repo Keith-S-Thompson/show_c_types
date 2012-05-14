@@ -201,10 +201,16 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
     do {                                                             \
         const int size = sizeof(type) * CHAR_BIT;                    \
         const int align = ALIGNOF(type) * CHAR_BIT;                  \
+        char *const hex_one = hex_image(&one, sizeof one);           \
+        char *const hex_minus_sixteen                                \
+            = hex_image(&minus_sixteen, sizeof minus_sixteen);       \
+        char *const hex_one_million                                  \
+            = hex_image(&one_million, sizeof one_million);           \
         const char *looks_like = floating_looks_like                 \
-            ( hex_image(&one, sizeof one),                           \
-              hex_image(&minus_sixteen, sizeof minus_sixteen),       \
-              hex_image(&one_million, sizeof one_million) );         \
+            ( hex_one, hex_minus_sixteen, hex_one_million );         \
+        free(hex_one);                                               \
+        free(hex_minus_sixteen);                                     \
+        free(hex_one_million);                                       \
         puts("    {");                                               \
         printf("        \"type\" : \"%s\",\n", #type);               \
         printf("        \"size\" : %d,\n", size);                    \
@@ -245,8 +251,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
 
 #define declare_endianness_function(the_type, func_name) \
 char *                                   \
-func_name(void)                          \
-{                                        \
+func_name(void) {                        \
     unsigned char arr[sizeof(the_type)]; \
                                          \
     if (sizeof(the_type) == 1) {         \
@@ -367,8 +372,7 @@ static char *unsigned_image(longest_unsigned n) {
     return result;
 }
 
-static void check_size(char *kind, bool sizes[], int size)
-{
+static void check_size(char *kind, bool sizes[], int size) {
     if (! sizes[size]) {
         puts("    {");
         printf("        \"comment\" : \"There is no %d-bit %s type\"\n", size, kind);
@@ -376,12 +380,10 @@ static void check_size(char *kind, bool sizes[], int size)
     }
 } /* check_size */
 
-static char *hex_image(const void *base, size_t size)
-{
+static char *hex_image(const void *base, size_t size) {
     /*
      * Note: This function returns a pointer to a malloc()ed buffer.
-     * It leaks memory if the caller doesn't free() the buffer.  For this
-     * small program, the memory leak should be inconsequential.
+     * The caller should free() the buffer.
      */
     static char *hex = "0123456789abcdef";
     size_t i;
@@ -391,7 +393,7 @@ static char *hex_image(const void *base, size_t size)
 
     if (result == NULL) {
         fprintf(stderr, "malloc failed\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     for (i = 0; i < size; i ++) {
@@ -404,8 +406,7 @@ static char *hex_image(const void *base, size_t size)
     return result;
 } /* hex_image */
 
-static int bits_of(int x)
-{
+static int bits_of(int x) {
     int result = 0;
 
     while (x) {
@@ -415,8 +416,7 @@ static int bits_of(int x)
     return result;
 } /* bits_of */
 
-static char *floating_looks_like(char *one, char *minus_sixteen, char *one_million)
-{
+static char *floating_looks_like(const char *one, const char *minus_sixteen, const char *one_million) {
 #if 0
     printf("          1.0 = %s\n", one);
     printf("        -16.0 = %s\n", minus_sixteen);
@@ -535,8 +535,20 @@ static char *floating_looks_like(char *one, char *minus_sixteen, char *one_milli
 #define MY_WCHAR_MAX 0
 #endif
 
-int main(int argc, char **argv)
-{
+/*
+ * Similar to the non-standard strdup() function
+ */
+char *dupstr(char *s) {
+    char *result = malloc(strlen(s) + 1);
+    if (result == NULL) {
+        fprintf(stderr, "malloc failed\n");
+        exit(EXIT_FAILURE);
+    }
+    strcpy(result, s);
+    return result;
+}
+
+int main(int argc, char **argv) {
     int i;
 
     set_formats();
@@ -546,7 +558,25 @@ int main(int argc, char **argv)
     if (argc > 1) {
         puts("    {");
         for (i = 1; i < argc; i ++) {
-            printf("        \"arg-%d\" : \"%s\"\n", i, argv[i]);
+            char *ptr_equals = strchr(argv[i], '=');
+            if (ptr_equals == NULL) {
+                printf("        \"arg-%d\" : \"%s\"", i, argv[i]);
+            }
+            else {
+                char *const arg = dupstr(argv[i]);
+                ptr_equals = arg + (ptr_equals - argv[i]);
+                *ptr_equals = '\0';
+                char *const key = arg;
+                char *const value = ptr_equals + 1;
+                printf("        \"%s\" : \"%s\"", key, value);
+                free(arg);
+            }
+            if (i == argc-1) {
+                putchar('\n');
+            }
+            else {
+                puts(",");
+            }
         }
         puts("    },");
     }

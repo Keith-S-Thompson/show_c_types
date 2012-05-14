@@ -1,8 +1,8 @@
 [
     {
-        "arg-1" : "OS=Windows 7"
-        "arg-2" : "compiler=Microsoft Visual C++ 2010 Express"
-        "arg-3" : "arch=x64"
+        "OS" : "Windows 7",
+        "compiler" : "Microsoft Visual C++ 2010 Express",
+        "arch" : "x64"
     },
     {
         "type" : "enum small_enum",

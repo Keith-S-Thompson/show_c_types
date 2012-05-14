@@ -1,8 +1,8 @@
 [
     {
-        "arg-1" : "config.guess=i686-pc-cygwin"
-        "arg-2" : "compiler=gcc (GCC) 4.5.3"
-        "arg-3" : "compile_command=gcc -std=c99"
+        "config.guess" : "i686-pc-cygwin",
+        "compiler" : "gcc (GCC) 4.5.3",
+        "compile_command" : "gcc -std=c99"
     },
     {
         "type" : "bool",

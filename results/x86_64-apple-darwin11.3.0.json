@@ -1,8 +1,8 @@
 [
     {
-        "arg-1" : "config.guess=x86_64-apple-darwin11.3.0"
-        "arg-2" : "compiler=i686-apple-darwin11-llvm-gcc-4.2 (GCC) 4.2.1 (Based on Apple Inc. build 5658) (LLVM build 2336.9.00)"
-        "arg-3" : "compile_command=gcc -std=c99"
+        "config.guess" : "x86_64-apple-darwin11.3.0",
+        "compiler" : "i686-apple-darwin11-llvm-gcc-4.2 (GCC) 4.2.1 (Based on Apple Inc. build 5658) (LLVM build 2336.9.00)",
+        "compile_command" : "gcc -std=c99"
     },
     {
         "type" : "bool",

@@ -1,8 +1,8 @@
 [
     {
-        "arg-1" : "config.guess=sparc-sun-solaris2.9"
-        "arg-2" : "compiler=cc: Sun C 5.9 SunOS_sparc Patch 124867-16 2010/08/11"
-        "arg-3" : "compile_command=cc -Xc -xc99=%all,no%lib -m64 -DENABLE_LONG_LONG"
+        "config.guess" : "sparc-sun-solaris2.9",
+        "compiler" : "cc: Sun C 5.9 SunOS_sparc Patch 124867-16 2010/08/11",
+        "compile_command" : "cc -Xc -xc99=%all,no%lib -m64 -DENABLE_LONG_LONG"
     },
     {
         "type" : "enum small_enum",

@@ -1,8 +1,8 @@
 [
     {
-        "arg-1" : "config.guess=powerpc-apple-darwin9.8.0"
-        "arg-2" : "compiler=powerpc-apple-darwin9-gcc-4.0.1 (GCC) 4.0.1 (Apple Inc. build 5493)"
-        "arg-3" : "compile_command=gcc -std=c99"
+        "config.guess" : "powerpc-apple-darwin9.8.0",
+        "compiler" : "powerpc-apple-darwin9-gcc-4.0.1 (GCC) 4.0.1 (Apple Inc. build 5493)",
+        "compile_command" : "gcc -std=c99"
     },
     {
         "type" : "bool",

@@ -1,8 +1,8 @@
 [
     {
-        "arg-1" : "config.guess=sparc-sun-solaris2.9"
-        "arg-2" : "compiler=gcc (GCC) 4.5.1"
-        "arg-3" : "compile_command=/usr/local/apps/gcc-4.5.1/bin/gcc -std=c99 -m64"
+        "config.guess" : "sparc-sun-solaris2.9",
+        "compiler" : "gcc (GCC) 4.5.1",
+        "compile_command" : "/usr/local/apps/gcc-4.5.1/bin/gcc -std=c99 -m64"
     },
     {
         "type" : "bool",
