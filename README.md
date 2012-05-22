@@ -1,7 +1,8 @@
 Copyright (C) 2012 Keith Thompson
 
 `show_c_types` is released under GPL version 2 or later.  See the
-header comments in `show_c_types.c` and `Makefile` and the file `COPYING`.
+header comments in `show_c_types.c` and `Makefile` and the file
+`COPYING`.
 
 This program uses a collection of very ugly macros to determine the
 characteristics of predefined C types.  The results are printed to
@@ -26,12 +27,12 @@ or
 
     make output
 
-This should generate a new file `output.json`.  (Run `make clean` first
-if necessary, e.g., if you've edited the `Makefile`.)
+This should generate a new file with a `.json` suffix.  (Run `make
+clean` first if necessary, e.g., if you've edited the `Makefile`.)
 
 If you've run this on a system for which I don't already have results
-in the `results` directory, please e-mail your `output.json` file as
-an attachment to the author.
+in the `results` directory, please e-mail the generated `*.json`
+file as an attachment to the author.
 
 I'll add more output files as I'm able to gather the information,
 including manually converting the plain text output from the older
