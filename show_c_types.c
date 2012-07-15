@@ -406,16 +406,6 @@ static char *hex_image(const void *base, size_t size) {
     return result;
 } /* hex_image */
 
-static int bits_of(int x) {
-    int result = 0;
-
-    while (x) {
-        x >>= 1;
-        result ++;
-    }
-    return result;
-} /* bits_of */
-
 static char *floating_looks_like(const char *one, const char *minus_sixteen, const char *one_million) {
 #if 0
     printf("          1.0 = %s\n", one);
