@@ -29,6 +29,9 @@ or
 
 This should generate a new file with a `.json` suffix.  (Run `make
 clean` first if necessary, e.g., if you've edited the `Makefile`.)
+The contents of the output file are subject to change in future
+releases.  The configuration record shows the version number of this
+program.
 
 If you've run this on a system for which I don't already have results
 in the `results` directory, please e-mail the generated `*.json`
