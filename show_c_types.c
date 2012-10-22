@@ -168,6 +168,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         const int size = sizeof(type) * CHAR_BIT;                     \
         const int align = ALIGNOF(type) * CHAR_BIT;                   \
         puts("    {");                                                \
+        puts("        \"node_kind\" : \"integer_type\",");            \
         printf("        \"type\" : \"%s\",\n", #type);                \
         printf("        \"size\" : %d,\n", size);                     \
         if (min != 0) {                                               \
@@ -220,6 +221,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         free(hex_minus_sixteen);                                     \
         free(hex_one_million);                                       \
         puts("    {");                                               \
+        puts("        \"node_kind\" : \"floating_type\",");          \
         printf("        \"type\" : \"%s\",\n", #type);               \
         printf("        \"size\" : %d,\n", size);                    \
         printf("        \"alignment\" : %d,\n", align);              \
@@ -249,6 +251,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         const int size = sizeof(type) * CHAR_BIT;      \
         const int align = ALIGNOF(type) * CHAR_BIT;    \
         puts("    {");                                 \
+        puts("        \"node_kind\" : \"type\",");     \
         printf("        \"type\" : \"%s\",\n", name);  \
         printf("        \"size\" : %d,\n", size);      \
         printf("        \"alignment\" : %d\n", align); \
@@ -385,6 +388,7 @@ static char *unsigned_image(longest_unsigned n) {
 static void check_size(char *kind, bool sizes[], int size) {
     if (! sizes[size]) {
         puts("    {");
+        puts("        \"node_kind\" : \"comment\",");
         printf("        \"comment\" : \"There is no %d-bit %s type\"\n", size, kind);
         puts("    },");
     }
@@ -550,7 +554,7 @@ char *dupstr(char *s) {
 
 static void show_configuration(int argc, char **argv) {
     puts("    {");
-    puts("        \"info\" : \"configuration\",");
+    puts("        \"node_kind\" : \"configuration\",");
     printf("        \"SHOW_C_TYPES_VERSION\" : \"%s\"%s\n", SHOW_C_TYPES_VERSION, argc > 1 ? "," : "");
     if (argc > 1) {
         int i;
@@ -583,7 +587,7 @@ static void show_configuration(int argc, char **argv) {
 
 static void show_predefined_macros(void) {
     puts("    {");
-    puts("        \"info\" : \"predefined macros\",");
+    puts("        \"node_kind\" : \"predefined_macros\",");
 
 #ifdef __STDC__
     printf("        \"__STDC__\" : %d,\n", __STDC__);
@@ -680,7 +684,8 @@ static void show_predefined_macros(void) {
 
 static void show_limits_h(void) {
     puts("    {");
-    puts("        \"header\" : \"<limits.h>\",");
+    puts("        \"node_kind\" : \"header\",");
+    puts("        \"header_name\" : \"<limits.h>\",");
     printf("        \"CHAR_BIT\" : %d,\n", (int)CHAR_BIT);
     printf("        \"SCHAR_MIN\" : %d,\n", (int)SCHAR_MIN);
     printf("        \"SCHAR_MAX\" : %d,\n", (int)SCHAR_MAX);
@@ -751,7 +756,8 @@ static char *HAS_SUBNORM_meaning(int has_subnorm) {
 
 static void show_float_h(void) {
     puts("    {");
-    puts("        \"header\" : \"<float.h>\",");
+    puts("        \"node_kind\" : \"header\",");
+    puts("        \"header_name\" : \"<float.h>\",");
 
 #ifdef FLT_ROUNDS
     printf("        \"FLT_ROUNDS\" : %d,\n", FLT_ROUNDS);
@@ -868,7 +874,8 @@ static void show_float_h(void) {
 
 static void show_stdint_h(void) {
     puts("    {");
-    puts("        \"header\" : \"<stdint.h>\",");
+    puts("        \"node_kind\" : \"header\",");
+    puts("        \"header_name\" : \"<stdint.h>\",");
 #ifdef STDINT_H_EXISTS
     puts("        \"header_exists\" : true,");
 
@@ -1089,6 +1096,7 @@ int main(int argc, char **argv) {
 
     if (huge_integer) {
         puts("    {");
+        puts("        \"node_kind\" : \"comment\",");
         printf("        \"comment\" : \"There is at least one integer type bigger than %d bits\"\n",
                MAX_SIZE);
         puts("    },");
@@ -1100,6 +1108,7 @@ int main(int argc, char **argv) {
 
     if (huge_float) {
         puts("    {");
+        puts("        \"node_kind\" : \"comment\",");
         printf("       \"comment\" : \"There is at least one float type bigger than %d bits\"\n",
                MAX_SIZE);
         puts("    },");
@@ -1109,6 +1118,7 @@ int main(int argc, char **argv) {
      * Do this just to make the commas match up.
      */
     puts("    {");
+    puts("        \"node_kind\" : \"comment\",");
     puts("        \"comment\" : \"done\"");
     puts("    }");
 
