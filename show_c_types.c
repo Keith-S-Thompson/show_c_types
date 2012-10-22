@@ -140,8 +140,8 @@ typedef enum { false, true } bool; /* for internal use only; we don't show
 
 #define MAX_SIZE 128
 
-static char *longest_unsigned_format;
-static char *longest_signed_format;
+static const char *longest_unsigned_format;
+static const char *longest_signed_format;
 
 static bool integer_sizes[MAX_SIZE + 1] = { false };
 static bool huge_integer = false;
