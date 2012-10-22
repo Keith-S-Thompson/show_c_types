@@ -54,6 +54,9 @@ of the following:
 The "configuration" record shows the version number of this program,
 currently `"2012-10-22"`.
 
+Currently, the `*.json` files in the `results/` directory are from
+an earlier version of this program. I'll update them soon.
+
 If you've run this on a system for which I don't already have results
 in the `results` directory, please e-mail the generated `*.json`
 file as an attachment to the author.
