@@ -12,7 +12,8 @@ It's based on an earlier unreleased program that prints similar
 information in plain text.
 
 You may need to modify the `Makefile` to adjust the compiler command
-as appropriate for your system.  See the header comment block there
+as appropriate for your system, or you may need to build and execute
+the program manually.  See the header comment block in the `Makefile`
 for details.
 
 To build:
@@ -29,9 +30,29 @@ or
 
 This should generate a new file with a `.json` suffix.  (Run `make
 clean` first if necessary, e.g., if you've edited the `Makefile`.)
-The contents of the output file are subject to change in future
-releases.  The configuration record shows the version number of this
-program.
+
+If you run the `show_c_types` program manually, it will write
+its results to standard output.  The program accepts command-line
+arguments of the form `key=value`, and will record those arguments
+in the `"configuration"` node (see below).
+
+The contents of the json output are intended to be human-readable and
+self-explanatory, but they're subject to change in future releases.
+The output consists of a single array, each element of which is a
+single object with no nested sub-objects.  Each element contains
+exactly one member with key "node_kind"; the value is currently one
+of the following:
+
+- `"comment"`
+- `"configuration"`
+- `"integer_type"`
+- `"floating_type"`
+- `"type"`
+- `"header"`
+- `"predefined_macros"`
+
+The "configuration" record shows the version number of this program,
+currently `"2012-10-22"`.
 
 If you've run this on a system for which I don't already have results
 in the `results` directory, please e-mail the generated `*.json`
