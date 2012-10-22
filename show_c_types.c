@@ -37,6 +37,14 @@
 #include <float.h>
 #include <time.h>
 
+#define SHOW_C_TYPES_VERSION "2012-10-22"
+/*
+ * The version is the date in YYYY-MM-DD format.
+ * If you modify this program, please update this definition.
+ * If you're not the original author, please append something to
+ * the version string such as "2012-10-22-yourname".
+ */
+
 /*
  * We try to use predefined macro values to determine characteristics
  * of the system.  In some cases, these tests can fail.  For example,
@@ -545,8 +553,9 @@ int main(int argc, char **argv) {
 
     puts("[");
 
+    puts("    {");
+    printf("       \"SHOW_C_TYPES_VERSION\" : \"%s\"%s\n", SHOW_C_TYPES_VERSION, argc > 1 ? "," : "");
     if (argc > 1) {
-        puts("    {");
         for (i = 1; i < argc; i ++) {
             char *ptr_equals = strchr(argv[i], '=');
             if (ptr_equals == NULL) {
@@ -568,8 +577,8 @@ int main(int argc, char **argv) {
                 puts(",");
             }
         }
-        puts("    },");
     }
+    puts("    },");
 
 #ifdef BOOL_EXISTS
     SHOW_INTEGER_TYPE(bool, bool_endianness(), 0, 0);
