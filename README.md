@@ -55,7 +55,8 @@ The "configuration" record shows the version number of this program,
 currently `"2012-10-22"`.
 
 Currently, the `*.json` files in the `results/` directory are from
-an earlier version of this program. I'll update them soon.
+an earlier version of this program. I'll update them [Real Soon
+Now](http://www.jargon.net/jargonfile/r/RealSoonNow.html).
 
 If you've run this on a system for which I don't already have results
 in the `results` directory, please e-mail the generated `*.json`
@@ -64,6 +65,10 @@ file as an attachment to the author.
 I'll add more output files as I'm able to gather the information,
 including manually converting the plain text output from the older
 version of this program.
+
+`dump_float.c` dumps selected floating-point values in hexadecimal;
+this is useful for updating the `floating_looks_like()` function in
+`show_c_types.c`.
 
 Home page: https://github.com/Keith-S-Thompson/show_c_types
 
