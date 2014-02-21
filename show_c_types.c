@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Keith Thompson
+ * Copyright (C) 2014 Keith Thompson
  */
 
 /*
@@ -602,13 +602,13 @@ static void show_predefined_macros(void) {
 #endif
 
 #ifdef __STDC_VERSION__
-    printf("        \"__STDC_VERSION__\" : %ldL,\n", __STDC_VERSION__);
+    printf("        \"__STDC_VERSION__\" : \"%ldL\",\n", __STDC_VERSION__);
 #else
     puts("        \"__STDC_VERSION__\" : null,");
 #endif
 
 #ifdef __STDC_ISO_10646__
-    printf("        \"__STDC_ISO_10646__\" : %ldL,\n", __STDC_ISO_10646__);
+    printf("        \"__STDC_ISO_10646__\" : \"%ldL\",\n", __STDC_ISO_10646__);
 #else
     puts("        \"__STDC_ISO_10646__\" : null,");
 #endif
@@ -650,7 +650,7 @@ static void show_predefined_macros(void) {
 #endif
 
 #ifdef __STDC_LIB_EXT1__
-    printf("        \"__STDC_LIB_EXT1__\" : %ldL,\n", __STDC_LIB_EXT1__);
+    printf("        \"__STDC_LIB_EXT1__\" : \"%ldL\",\n", __STDC_LIB_EXT1__);
 #else
     puts("        \"__STDC_LIB_EXT1__\" : null,");
 #endif
@@ -880,128 +880,143 @@ static void show_stdint_h(void) {
     puts("        \"header_exists\" : true,");
 
 #ifdef INT8_MIN
-    printf("        \"INT8_MIN\" : %s\n", signed_image(INT8_MIN));
+    printf("        \"INT8_MIN\" : %s,\n", signed_image(INT8_MIN));
 #else
     printf("        \"INT8_MIN\" : null,\n");
 #endif
 #ifdef INT8_MAX
-    printf("        \"INT8_MAX\" : %s\n", signed_image(INT8_MAX));
+    printf("        \"INT8_MAX\" : %s,\n", signed_image(INT8_MAX));
 #else
     printf("        \"INT8_MAX\" : null,\n");
 #endif
 #ifdef UINT8_MAX
-    printf("        \"UINT8_MAX\" : %s\n", unsigned_image(UINT8_MAX));
+    printf("        \"UINT8_MAX\" : %s,\n", unsigned_image(UINT8_MAX));
 #else
     printf("        \"UINT8_MAX\" : null,\n");
 #endif
 #ifdef INT16_MIN
-    printf("        \"INT16_MIN\" : %s\n", signed_image(INT16_MIN));
+    printf("        \"INT16_MIN\" : %s,\n", signed_image(INT16_MIN));
 #else
     printf("        \"INT16_MIN\" : null,\n");
 #endif
 #ifdef INT16_MAX
-    printf("        \"INT16_MAX\" : %s\n", signed_image(INT16_MAX));
+    printf("        \"INT16_MAX\" : %s,\n", signed_image(INT16_MAX));
 #else
     printf("        \"INT16_MAX\" : null,\n");
 #endif
 #ifdef UINT16_MAX
-    printf("        \"UINT16_MAX\" : %s\n", unsigned_image(UINT16_MAX));
+    printf("        \"UINT16_MAX\" : %s,\n", unsigned_image(UINT16_MAX));
 #else
     printf("        \"UINT16_MAX\" : null,\n");
 #endif
 #ifdef INT32_MIN
-    printf("        \"INT32_MIN\" : %s\n", signed_image(INT32_MIN));
+    printf("        \"INT32_MIN\" : %s,\n", signed_image(INT32_MIN));
 #else
     printf("        \"INT32_MIN\" : null,\n");
 #endif
 #ifdef INT32_MAX
-    printf("        \"INT32_MAX\" : %s\n", signed_image(INT32_MAX));
+    printf("        \"INT32_MAX\" : %s,\n", signed_image(INT32_MAX));
 #else
     printf("        \"INT32_MAX\" : null,\n");
 #endif
 #ifdef UINT32_MAX
-    printf("        \"UINT32_MAX\" : %s\n", unsigned_image(UINT32_MAX));
+    printf("        \"UINT32_MAX\" : %s,\n", unsigned_image(UINT32_MAX));
 #else
     printf("        \"UINT32_MAX\" : null,\n");
 #endif
 #ifdef INT64_MIN
-    printf("        \"INT64_MIN\" : %s\n", signed_image(INT64_MIN));
+    printf("        \"INT64_MIN\" : %s,\n", signed_image(INT64_MIN));
 #else
     printf("        \"INT64_MIN\" : null,\n");
 #endif
 #ifdef INT64_MAX
-    printf("        \"INT64_MAX\" : %s\n", signed_image(INT64_MAX));
+    printf("        \"INT64_MAX\" : %s,\n", signed_image(INT64_MAX));
 #else
     printf("        \"INT64_MAX\" : null,\n");
 #endif
 #ifdef UINT64_MAX
-    printf("        \"UINT64_MAX\" : %s\n", unsigned_image(UINT64_MAX));
+    printf("        \"UINT64_MAX\" : %s,\n", unsigned_image(UINT64_MAX));
 #else
     printf("        \"UINT64_MAX\" : null,\n");
 #endif
+#ifdef INTMAX_MIN
+    printf("        \"INTMAX_MIN\" : %s,\n", signed_image(INTMAX_MIN));
+#else
+    printf("        \"INTMAX_MIN\" : null,\n");
+#endif
+#ifdef INTMAX_MAX
+    printf("        \"INTMAX_MAX\" : %s,\n", signed_image(INTMAX_MAX));
+#else
+    printf("        \"INTMAX_MAX\" : null,\n");
+#endif
+#ifdef UINTMAX_MAX
+    printf("        \"UINTMAX_MAX\" : %s,\n", unsigned_image(UINTMAX_MAX));
+#else
+    printf("        \"UINTMAX_MAX\" : null,\n");
+#endif
 
-    printf("        \"INT_LEAST8_MIN\" : %s\n", signed_image(INT_LEAST8_MIN));
-    printf("        \"INT_LEAST8_MAX\" : %s\n", signed_image(INT_LEAST8_MAX));
-    printf("        \"UINT_LEAST8_MAX\" : %s\n", unsigned_image(UINT_LEAST8_MAX));
-    printf("        \"INT_LEAST16_MIN\" : %s\n", signed_image(INT_LEAST16_MIN));
-    printf("        \"INT_LEAST16_MAX\" : %s\n", signed_image(INT_LEAST16_MAX));
-    printf("        \"UINT_LEAST16_MAX\" : %s\n", unsigned_image(UINT_LEAST16_MAX));
-    printf("        \"INT_LEAST32_MIN\" : %s\n", signed_image(INT_LEAST32_MIN));
-    printf("        \"INT_LEAST32_MAX\" : %s\n", signed_image(INT_LEAST32_MAX));
-    printf("        \"UINT_LEAST32_MAX\" : %s\n", unsigned_image(UINT_LEAST32_MAX));
-    printf("        \"INT_LEAST64_MIN\" : %s\n", signed_image(INT_LEAST64_MIN));
-    printf("        \"INT_LEAST64_MAX\" : %s\n", signed_image(INT_LEAST64_MAX));
-    printf("        \"UINT_LEAST64_MAX\" : %s\n", unsigned_image(UINT_LEAST64_MAX));
+    printf("        \"INT_LEAST8_MIN\" : %s,\n", signed_image(INT_LEAST8_MIN));
+    printf("        \"INT_LEAST8_MAX\" : %s,\n", signed_image(INT_LEAST8_MAX));
+    printf("        \"UINT_LEAST8_MAX\" : %s,\n", unsigned_image(UINT_LEAST8_MAX));
+    printf("        \"INT_LEAST16_MIN\" : %s,\n", signed_image(INT_LEAST16_MIN));
+    printf("        \"INT_LEAST16_MAX\" : %s,\n", signed_image(INT_LEAST16_MAX));
+    printf("        \"UINT_LEAST16_MAX\" : %s,\n", unsigned_image(UINT_LEAST16_MAX));
+    printf("        \"INT_LEAST32_MIN\" : %s,\n", signed_image(INT_LEAST32_MIN));
+    printf("        \"INT_LEAST32_MAX\" : %s,\n", signed_image(INT_LEAST32_MAX));
+    printf("        \"UINT_LEAST32_MAX\" : %s,\n", unsigned_image(UINT_LEAST32_MAX));
+    printf("        \"INT_LEAST64_MIN\" : %s,\n", signed_image(INT_LEAST64_MIN));
+    printf("        \"INT_LEAST64_MAX\" : %s,\n", signed_image(INT_LEAST64_MAX));
+    printf("        \"UINT_LEAST64_MAX\" : %s,\n", unsigned_image(UINT_LEAST64_MAX));
 
-    printf("        \"INT_FAST8_MIN\" : %s\n", signed_image(INT_FAST8_MIN));
-    printf("        \"INT_FAST8_MAX\" : %s\n", signed_image(INT_FAST8_MAX));
-    printf("        \"UINT_FAST8_MAX\" : %s\n", unsigned_image(UINT_FAST8_MAX));
-    printf("        \"INT_FAST16_MIN\" : %s\n", signed_image(INT_FAST16_MIN));
-    printf("        \"INT_FAST16_MAX\" : %s\n", signed_image(INT_FAST16_MAX));
-    printf("        \"UINT_FAST16_MAX\" : %s\n", unsigned_image(UINT_FAST16_MAX));
-    printf("        \"INT_FAST32_MIN\" : %s\n", signed_image(INT_FAST32_MIN));
-    printf("        \"INT_FAST32_MAX\" : %s\n", signed_image(INT_FAST32_MAX));
-    printf("        \"UINT_FAST32_MAX\" : %s\n", unsigned_image(UINT_FAST32_MAX));
-    printf("        \"INT_FAST64_MIN\" : %s\n", signed_image(INT_FAST64_MIN));
-    printf("        \"INT_FAST64_MAX\" : %s\n", signed_image(INT_FAST64_MAX));
-    printf("        \"UINT_FAST64_MAX\" : %s\n", unsigned_image(UINT_FAST64_MAX));
+    printf("        \"INT_FAST8_MIN\" : %s,\n", signed_image(INT_FAST8_MIN));
+    printf("        \"INT_FAST8_MAX\" : %s,\n", signed_image(INT_FAST8_MAX));
+    printf("        \"UINT_FAST8_MAX\" : %s,\n", unsigned_image(UINT_FAST8_MAX));
+    printf("        \"INT_FAST16_MIN\" : %s,\n", signed_image(INT_FAST16_MIN));
+    printf("        \"INT_FAST16_MAX\" : %s,\n", signed_image(INT_FAST16_MAX));
+    printf("        \"UINT_FAST16_MAX\" : %s,\n", unsigned_image(UINT_FAST16_MAX));
+    printf("        \"INT_FAST32_MIN\" : %s,\n", signed_image(INT_FAST32_MIN));
+    printf("        \"INT_FAST32_MAX\" : %s,\n", signed_image(INT_FAST32_MAX));
+    printf("        \"UINT_FAST32_MAX\" : %s,\n", unsigned_image(UINT_FAST32_MAX));
+    printf("        \"INT_FAST64_MIN\" : %s,\n", signed_image(INT_FAST64_MIN));
+    printf("        \"INT_FAST64_MAX\" : %s,\n", signed_image(INT_FAST64_MAX));
+    printf("        \"UINT_FAST64_MAX\" : %s,\n", unsigned_image(UINT_FAST64_MAX));
 
-    printf("        \"INTPTR_MIN\" : %s\n", signed_image(INTPTR_MIN));
-    printf("        \"INTPTR_MAX\" : %s\n", signed_image(INTPTR_MAX));
-    printf("        \"UINTPTR_MAX\" : %s\n", unsigned_image(UINTPTR_MAX));
+    printf("        \"INTPTR_MIN\" : %s,\n", signed_image(INTPTR_MIN));
+    printf("        \"INTPTR_MAX\" : %s,\n", signed_image(INTPTR_MAX));
+    printf("        \"UINTPTR_MAX\" : %s,\n", unsigned_image(UINTPTR_MAX));
 
-    printf("        \"PTRDIFF_MIN\" : %s\n", signed_image(PTRDIFF_MIN));
-    printf("        \"PTRDIFF_MAX\" : %s\n", signed_image(PTRDIFF_MAX));
+    printf("        \"PTRDIFF_MIN\" : %s,\n", signed_image(PTRDIFF_MIN));
+    printf("        \"PTRDIFF_MAX\" : %s,\n", signed_image(PTRDIFF_MAX));
 
 #ifdef SIG_ATOMIC_MIN
 #if SIG_ATOMIC_MIN == 0
-    printf("        \"SIG_ATOMIC_MIN\" : %s\n", unsigned_image(SIG_ATOMIC_MIN));
-    printf("        \"SIG_ATOMIC_MAX\" : %s\n", unsigned_image(SIG_ATOMIC_MAX));
+    printf("        \"SIG_ATOMIC_MIN\" : %s,\n", unsigned_image(SIG_ATOMIC_MIN));
+    printf("        \"SIG_ATOMIC_MAX\" : %s,\n", unsigned_image(SIG_ATOMIC_MAX));
 #else
-    printf("        \"SIG_ATOMIC_MIN\" : %s\n", signed_image(SIG_ATOMIC_MIN));
-    printf("        \"SIG_ATOMIC_MAX\" : %s\n", signed_image(SIG_ATOMIC_MAX));
+    printf("        \"SIG_ATOMIC_MIN\" : %s,\n", signed_image(SIG_ATOMIC_MIN));
+    printf("        \"SIG_ATOMIC_MAX\" : %s,\n", signed_image(SIG_ATOMIC_MAX));
 #endif
 #endif
 
-    printf("        \"SIZE_MAX\" : %s\n", unsigned_image(SIZE_MAX));
+    printf("        \"SIZE_MAX\" : %s,\n", unsigned_image(SIZE_MAX));
 
 #ifdef WCHAR_MIN
 #if WCHAR_MIN == 0
-    printf("        \"WCHAR_MIN\" : %s\n", unsigned_image(WCHAR_MIN));
-    printf("        \"WCHAR_MAX\" : %s\n", unsigned_image(WCHAR_MAX));
+    printf("        \"WCHAR_MIN\" : %s,\n", unsigned_image(WCHAR_MIN));
+    printf("        \"WCHAR_MAX\" : %s,\n", unsigned_image(WCHAR_MAX));
 #else
-    printf("        \"WCHAR_MIN\" : %s\n", signed_image(WCHAR_MIN));
-    printf("        \"WCHAR_MAX\" : %s\n", signed_image(WCHAR_MAX));
+    printf("        \"WCHAR_MIN\" : %s,\n", signed_image(WCHAR_MIN));
+    printf("        \"WCHAR_MAX\" : %s,\n", signed_image(WCHAR_MAX));
 #endif
 #endif
 
 #ifdef WINT_MIN
 #if WINT_MIN == 0
-    printf("        \"WINT_MIN\" : %s\n", unsigned_image(WINT_MIN));
-    printf("        \"WINT_MAX\" : %s\n", unsigned_image(WINT_MAX));
+    printf("        \"WINT_MIN\" : %s,\n", unsigned_image(WINT_MIN));
+    printf("        \"WINT_MAX\" : %s,\n", unsigned_image(WINT_MAX));
 #else
-    printf("        \"WINT_MIN\" : %s\n", signed_image(WINT_MIN));
-    printf("        \"WINT_MAX\" : %s\n", signed_image(WINT_MAX));
+    printf("        \"WINT_MIN\" : %s,\n", signed_image(WINT_MIN));
+    printf("        \"WINT_MAX\" : %s,\n", signed_image(WINT_MAX));
 #endif
 #endif
 
@@ -1047,11 +1062,6 @@ int main(int argc, char **argv) {
 #ifdef LONG_LONG_EXISTS
     SHOW_INTEGER_TYPE(long long, long_long_endianness(), MY_LLONG_MIN, MY_LLONG_MAX);
     SHOW_INTEGER_TYPE(unsigned long long, unsigned_long_long_endianness(), 0, MY_ULLONG_MAX);
-#endif
-
-#ifdef STDINT_H_EXISTS
-    SHOW_INTEGER_TYPE(intmax_t, intmax_t_endianness(), INTMAX_MIN, INTMAX_MAX);
-    SHOW_INTEGER_TYPE(uintmax_t, uintmax_t_endianness(), 0, UINTMAX_MAX);
 #endif
 
     SHOW_FLOATING_TYPE(float,       FLT_MANT_DIG,  FLT_MIN_EXP,  FLT_MAX_EXP,
