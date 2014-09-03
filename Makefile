@@ -72,7 +72,10 @@ CC_VERSION=$(CC) --version | head -n 1
 # CC_VERSION=cc -V 2>&1 | head -n 1
 
 # "make" with no arguments creates the executable and runs it, creating
-# "`./result-file-name`.json", for example, "i686-pc-linux-gnu.json"
+# "`./result-file-name`.json.in", for example, "i686-pc-linux-gnu.json.in"
+#
+# Running fix-json.pl on the *.json.in file to generate valid JSON is, for now,
+# left as a manual step
 
 OUTPUT=`./result-file-name`
 
