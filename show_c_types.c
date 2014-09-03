@@ -20,7 +20,12 @@
 /*
  * This program uses a collection of very ugly macros to determine the
  * characteristics of predefined C types.  The results are printed to
- * stdout in JSON format.
+ * stdout in something close to JSON format.
+ *
+ * JSON doesn't permit trailing commas in lists, but this program's
+ * output includes trailing commas (because it's moderately difficult
+ * to determine when a list is finished).  The output can easily be
+ * post-processed into valid JSON.
  *
  * Author: Keith Thompson <Keith.S.Thompson@gmail.com>
  */
@@ -37,7 +42,7 @@
 #include <float.h>
 #include <time.h>
 
-#define SHOW_C_TYPES_VERSION "2012-10-22"
+#define SHOW_C_TYPES_VERSION "2014-09-02"
 /*
  * The version is the date in YYYY-MM-DD format.
  * If you modify this program, please update this definition.
@@ -196,7 +201,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         if (endianness != NULL) {                                     \
             printf("        \"endianness\" : \"%s\",\n", endianness); \
         }                                                             \
-        printf("        \"alignment\" : %d\n", align);                \
+        printf("        \"alignment\" : %d,\n", align);                \
         if (size <= MAX_SIZE) {                                       \
             integer_sizes[size] = true;                               \
         }                                                             \
@@ -235,7 +240,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
             printf("        \"max_exp\" : %d,\n", max_exp);          \
         }                                                            \
         if (one != 0.0) {                                            \
-            printf("        \"looks_like\" : \"%s\"\n", looks_like); \
+            printf("        \"looks_like\" : \"%s\",\n", looks_like); \
         }                                                            \
         if (size <= MAX_SIZE) {                                      \
             float_sizes[size] = true;                                \
@@ -254,7 +259,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         puts("        \"node_kind\" : \"type\",");     \
         printf("        \"type\" : \"%s\",\n", name);  \
         printf("        \"size\" : %d,\n", size);      \
-        printf("        \"alignment\" : %d\n", align); \
+        printf("        \"alignment\" : %d,\n", align); \
         printf("    },\n");                            \
     } while(0)
 
@@ -555,13 +560,13 @@ char *dupstr(char *s) {
 static void show_configuration(int argc, char **argv) {
     puts("    {");
     puts("        \"node_kind\" : \"configuration\",");
-    printf("        \"SHOW_C_TYPES_VERSION\" : \"%s\"%s\n", SHOW_C_TYPES_VERSION, argc > 1 ? "," : "");
+    printf("        \"SHOW_C_TYPES_VERSION\" : \"%s\",\n", SHOW_C_TYPES_VERSION);
     if (argc > 1) {
         int i;
         for (i = 1; i < argc; i ++) {
             char *ptr_equals = strchr(argv[i], '=');
             if (ptr_equals == NULL) {
-                printf("        \"arg-%d\" : \"%s\"", i, argv[i]);
+                printf("        \"arg-%d\" : \"%s\",\n", i, argv[i]);
             }
             else {
                 char *const arg = dupstr(argv[i]);
@@ -571,14 +576,8 @@ static void show_configuration(int argc, char **argv) {
                 *ptr_equals = '\0';
                 key = arg;
                 value = ptr_equals + 1;
-                printf("        \"%s\" : \"%s\"", key, value);
+                printf("        \"%s\" : \"%s\",\n", key, value);
                 free(arg);
-            }
-            if (i == argc-1) {
-                putchar('\n');
-            }
-            else {
-                puts(",");
             }
         }
     }
@@ -674,9 +673,9 @@ static void show_predefined_macros(void) {
 #endif
 
 #ifdef __STDC_NO_VLA
-    printf("        \"__STDC_NO_VLA\" : %d\n", __STDC_NO_VLA);
+    printf("        \"__STDC_NO_VLA\" : %d,\n", __STDC_NO_VLA);
 #else
-    puts("        \"__STDC_NO_VLA\" : null");
+    puts("        \"__STDC_NO_VLA\" : null,");
 #endif
 
     puts("    },");
@@ -1123,14 +1122,6 @@ int main(int argc, char **argv) {
                MAX_SIZE);
         puts("    },");
     }
-
-    /*
-     * Do this just to make the commas match up.
-     */
-    puts("    {");
-    puts("        \"node_kind\" : \"comment\",");
-    puts("        \"comment\" : \"done\"");
-    puts("    }");
 
     puts("]");
 

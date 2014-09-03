@@ -1,4 +1,4 @@
-Copyright (C) 2012 Keith Thompson
+Copyright (C) 2014 Keith Thompson
 
 `show_c_types` is released under GPL version 2 or later.  See the
 header comments in `show_c_types.c` and `Makefile` and the file
@@ -6,7 +6,12 @@ header comments in `show_c_types.c` and `Makefile` and the file
 
 This program uses a collection of very ugly macros to determine the
 characteristics of predefined C types.  The results are printed to
-stdout in [JSON](http://www.json.org/) format.
+stdout in something closely resembling [JSON](http://www.json.org/) format.
+
+JSON doesn't permit a comma on the last element of a list.  To make
+the logic simpler, this program prints final commas.  The output
+can be translated to valid JSON using the included `fix-json.pl`
+script (which is specialized for this program's output).
 
 It's based on an earlier unreleased program that prints similar
 information in plain text.
@@ -52,7 +57,7 @@ of the following:
 - `"predefined_macros"`
 
 The "configuration" record shows the version number of this program,
-currently `"2012-10-22"`.
+currently `"2014-09-02"`.
 
 Currently, the `*.json` files in the `results/` directory are from
 an earlier version of this program. I'll update them [Real Soon
