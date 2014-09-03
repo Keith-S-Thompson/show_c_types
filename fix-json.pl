@@ -14,6 +14,12 @@ use warnings;
 my @pending = ();
 while (<>) {
     push @pending, $_;
+    if (/^\[$/) {
+        push @pending, qq(    {\n);
+        push @pending, qq(        "node_kind" : "comment",\n);
+        push @pending, qq(        "comment" : "Postprocessed by fix-json.pl"\n);
+        push @pending, qq(    },\n);
+    }
     if (scalar @pending >= 2) {
         if ( /},?$/ or /\]$/) {
             $pending[-2] =~ s/,$//;
