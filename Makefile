@@ -15,7 +15,7 @@
 
 # Adjust the definition of "CC" and "CC_VERSION" as needed for your system.
 # Enable C99 or higher conformance if possible.
-# If you want to add more information to the `config.guess`.json file,
+# If you want to add more information to the `config.guess`.ini file,
 # add arguments to the "./show_c_types" command line.
 
 ########################################################################
@@ -72,10 +72,7 @@ CC_VERSION=$(CC) --version | head -n 1
 # CC_VERSION=cc -V 2>&1 | head -n 1
 
 # "make" with no arguments creates the executable and runs it, creating
-# "`./result-file-name`.json.in", for example, "i686-pc-linux-gnu.json.in"
-#
-# Running fix-json.pl on the *.json.in file to generate valid JSON is, for now,
-# left as a manual step
+# "`./result-file-name`.ini", for example, "i686-pc-linux-gnu.ini"
 
 OUTPUT=`./result-file-name`
 

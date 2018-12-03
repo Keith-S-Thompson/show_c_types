@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Keith Thompson
+ * Copyright (C) 2018 Keith Thompson
  */
 
 /*
@@ -20,12 +20,8 @@
 /*
  * This program uses a collection of very ugly macros to determine the
  * characteristics of predefined C types.  The results are printed to
- * stdout in something close to JSON format.
- *
- * JSON doesn't permit trailing commas in lists, but this program's
- * output includes trailing commas (because it's moderately difficult
- * to determine when a list is finished).  The output can easily be
- * post-processed into valid JSON.
+ * stdout in "ini" format.
+ *     https://en.wikipedia.org/wiki/INI_file
  *
  * Author: Keith Thompson <Keith.S.Thompson@gmail.com>
  */
@@ -42,7 +38,7 @@
 #include <float.h>
 #include <time.h>
 
-#define SHOW_C_TYPES_VERSION "2014-09-02"
+#define SHOW_C_TYPES_VERSION "2018-12-02"
 /*
  * The version is the date in YYYY-MM-DD format.
  * If you modify this program, please update this definition.
@@ -141,9 +137,15 @@ typedef enum { false, true } bool; /* for internal use only; we don't show
 
 #define IS_SIGNED(type) ((type)-1 < (type)0)
 
+#if __STDC_VERSION__ >= 201112L
+#define ALIGNOF(type) ((int)(_Alignof (type)))
+#else
 #define ALIGNOF(type) ((int)(offsetof(struct {char c; type t;}, t)))
+#endif
 
 #define MAX_SIZE 128
+
+static int comment_index = 0;
 
 static const char *longest_unsigned_format;
 static const char *longest_signed_format;
@@ -172,43 +174,38 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
     do {                                                              \
         const int size = sizeof(type) * CHAR_BIT;                     \
         const int align = ALIGNOF(type) * CHAR_BIT;                   \
-        puts("    {");                                                \
-        puts("        \"node_kind\" : \"integer_type\",");            \
-        printf("        \"type\" : \"%s\",\n", #type);                \
-        printf("        \"size\" : %d,\n", size);                     \
+        printf("[%s]\n", #type);                                      \
+        puts("    kind = integer_type");                                    \
+        printf("    size = %d\n", size);                                    \
         if (min != 0) {                                               \
             if (IS_SIGNED(type)) {                                    \
-                printf("        \"min\" : %s,\n",                     \
-                       signed_image(min));                            \
+                printf("    min = %s\n", signed_image(min));                \
             }                                                         \
             else {                                                    \
-                printf("        \"min\" : %s,\n",                     \
-                       unsigned_image(min));                          \
+                printf("    min = %s\n", unsigned_image(min));              \
             }                                                         \
         }                                                             \
         if (max != 0) {                                               \
             if (IS_SIGNED(type)) {                                    \
-                printf("        \"max\" : %s,\n",                     \
-                       signed_image(max));                            \
+                printf("    max = %s\n", signed_image(max));                \
             }                                                         \
             else {                                                    \
-                printf("        \"max\" : %s,\n",                     \
-                       unsigned_image(max));                          \
+                printf("    max = %s\n", unsigned_image(max));              \
             }                                                         \
         }                                                             \
-        printf("        \"signedness\" : \"%s\",\n",                  \
+        printf("    signedness = %s\n",                                     \
                (IS_SIGNED(type) ? "signed" : "unsigned"));            \
         if (endianness != NULL) {                                     \
-            printf("        \"endianness\" : \"%s\",\n", endianness); \
+            printf("    endianness = %s\n", endianness);                    \
         }                                                             \
-        printf("        \"alignment\" : %d,\n", align);                \
+        printf("    align = %d\n", align);                                  \
         if (size <= MAX_SIZE) {                                       \
             integer_sizes[size] = true;                               \
         }                                                             \
         else {                                                        \
             huge_integer = true;                                      \
         }                                                             \
-        puts("    },");                                               \
+        putchar('\n');                                                \
     } while(0)
 
 #define SHOW_FLOATING_TYPE(type, mant_dig, min_exp, max_exp, one, minus_sixteen, one_million) \
@@ -225,22 +222,21 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         free(hex_one);                                               \
         free(hex_minus_sixteen);                                     \
         free(hex_one_million);                                       \
-        puts("    {");                                               \
-        puts("        \"node_kind\" : \"floating_type\",");          \
-        printf("        \"type\" : \"%s\",\n", #type);               \
-        printf("        \"size\" : %d,\n", size);                    \
-        printf("        \"alignment\" : %d,\n", align);              \
+        printf("[%s]\n", #type);                                     \
+        puts("    kind = floating_type");                                  \
+        printf("    size = %d\n", size);                                   \
+        printf("    alignment = %d\n", align);                             \
         if (mant_dig != 0) {                                         \
-            printf("        \"mantissa_bits\" : %d,\n", mant_dig);   \
+            printf("    mantissa_bits = %d\n", mant_dig);                  \
         }                                                            \
         if (min_exp != 0) {                                          \
-            printf("        \"min_exp\" : %d,\n", min_exp);          \
+            printf("    min_exp = %d\n", min_exp);                         \
         }                                                            \
         if (max_exp != 0) {                                          \
-            printf("        \"max_exp\" : %d,\n", max_exp);          \
+            printf("    max_exp = %d\n", max_exp);                         \
         }                                                            \
         if (one != 0.0) {                                            \
-            printf("        \"looks_like\" : \"%s\",\n", looks_like); \
+            printf("    looks_like = \"%s\"\n", looks_like);               \
         }                                                            \
         if (size <= MAX_SIZE) {                                      \
             float_sizes[size] = true;                                \
@@ -248,19 +244,18 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         else {                                                       \
             huge_float = true;                                       \
         }                                                            \
-        puts("    },");                                              \
+        putchar('\n');                                               \
     } while(0)
 
 #define SHOW_RAW_TYPE_WITH_NAME(type, name)            \
     do {                                               \
         const int size = sizeof(type) * CHAR_BIT;      \
         const int align = ALIGNOF(type) * CHAR_BIT;    \
-        puts("    {");                                 \
-        puts("        \"node_kind\" : \"type\",");     \
-        printf("        \"type\" : \"%s\",\n", name);  \
-        printf("        \"size\" : %d,\n", size);      \
-        printf("        \"alignment\" : %d,\n", align); \
-        printf("    },\n");                            \
+        printf("[%s]\n", name);                        \
+        puts("    kind = type");                             \
+        printf("    size = %d\n", size);                     \
+        printf("    alignment = %d\n", align);               \
+        putchar('\n');                                 \
     } while(0)
 
 #define SHOW_RAW_TYPE(type) SHOW_RAW_TYPE_WITH_NAME(type, #type)
@@ -392,10 +387,9 @@ static char *unsigned_image(longest_unsigned n) {
 
 static void check_size(char *kind, bool sizes[], int size) {
     if (! sizes[size]) {
-        puts("    {");
-        puts("        \"node_kind\" : \"comment\",");
-        printf("        \"comment\" : \"There is no %d-bit %s type\"\n", size, kind);
-        puts("    },");
+        printf("[comment-%d]\n", comment_index++);
+        printf("    comment = \"There is no %d-bit %s type\"\n", size, kind);
+        putchar('\n');
     }
 } /* check_size */
 
@@ -427,9 +421,9 @@ static char *hex_image(const void *base, size_t size) {
 
 static char *floating_looks_like(const char *one, const char *minus_sixteen, const char *one_million) {
 #if 0
-    printf("          1.0 = %s\n", one);
-    printf("        -16.0 = %s\n", minus_sixteen);
-    printf("        1.0e6 = %s\n", one_million);
+    printf("              1.0 = %s\n", one);
+    printf("            -16.0 = %s\n", minus_sixteen);
+    printf("            1.0e6 = %s\n", one_million);
 #endif
 
     if (strcmp(one,           "3f800000") == 0 &&
@@ -558,15 +552,14 @@ char *dupstr(char *s) {
 }
 
 static void show_configuration(int argc, char **argv) {
-    puts("    {");
-    puts("        \"node_kind\" : \"configuration\",");
-    printf("        \"SHOW_C_TYPES_VERSION\" : \"%s\",\n", SHOW_C_TYPES_VERSION);
+    puts("[configuration]");
+    printf("    SHOW_C_TYPES_VERSION = %s\n", SHOW_C_TYPES_VERSION);
     if (argc > 1) {
         int i;
         for (i = 1; i < argc; i ++) {
             char *ptr_equals = strchr(argv[i], '=');
             if (ptr_equals == NULL) {
-                printf("        \"arg-%d\" : \"%s\",\n", i, argv[i]);
+                printf("    arg-%d = %s\n", i, argv[i]);
             }
             else {
                 char *const arg = dupstr(argv[i]);
@@ -576,156 +569,147 @@ static void show_configuration(int argc, char **argv) {
                 *ptr_equals = '\0';
                 key = arg;
                 value = ptr_equals + 1;
-                printf("        \"%s\" : \"%s\",\n", key, value);
+                printf("    %s = %s\n", key, value);
                 free(arg);
             }
         }
     }
-    puts("    },");
+    putchar('\n');
 }
 
 static void show_predefined_macros(void) {
-    puts("    {");
-    puts("        \"node_kind\" : \"predefined_macros\",");
-
+    puts("[predefined_macros]");
 #ifdef __STDC__
-    printf("        \"__STDC__\" : %d,\n", __STDC__);
+    printf("    __STDC__ = %d\n", __STDC__);
 #else
-    puts("        \"__STDC__\" : null,");
+    puts("    __STDC__ = undefined");
 #endif
 
 #ifdef __STDC_HOSTED__
-    printf("        \"__STDC_HOSTED__\" : %d,\n", __STDC_HOSTED__);
+    printf("    __STDC_HOSTED__ = %d\n", __STDC_HOSTED__);
 #else
-    puts("        \"__STDC_HOSTED__\" : null,");
+    puts("    __STDC_HOSTED__ = undefined");
 #endif
 
 #ifdef __STDC_VERSION__
-    printf("        \"__STDC_VERSION__\" : \"%ldL\",\n", __STDC_VERSION__);
+    printf("    __STDC_VERSION__ = %ldL\n", __STDC_VERSION__);
 #else
-    puts("        \"__STDC_VERSION__\" : null,");
+    puts("    __STDC_VERSION__ = undefined");
 #endif
 
 #ifdef __STDC_ISO_10646__
-    printf("        \"__STDC_ISO_10646__\" : \"%ldL\",\n", __STDC_ISO_10646__);
+    printf("    __STDC_ISO_10646__ = %ldL\n", __STDC_ISO_10646__);
 #else
-    puts("        \"__STDC_ISO_10646__\" : null,");
+    puts("    __STDC_ISO_10646__ = undefined");
 #endif
 
 #ifdef __STDC_MB_MIGHT_NEQ_WC__
-    printf("        \"__STDC_MB_MIGHT_NEQ_WC__\" : %d,\n", __STDC_MB_MIGHT_NEQ_WC__);
+    printf("    __STDC_MB_MIGHT_NEQ_WC__ = %d\n", __STDC_MB_MIGHT_NEQ_WC__);
 #else
-    puts("        \"__STDC_MB_MIGHT_NEQ_WC__\" : null,");
+    puts("    __STDC_MB_MIGHT_NEQ_WC__ = undefined");
 #endif
 
 #ifdef __STDC_UTF_16__
-    printf("        \"__STDC_UTF_16__\" : %d,\n", __STDC_UTF_16__);
+    printf("    __STDC_UTF_16__ = %d\n", __STDC_UTF_16__);
 #else
-    puts("        \"__STDC_UTF_16__\" : null,");
+    puts("    __STDC_UTF_16__ = undefined");
 #endif
 
 #ifdef __STDC_UTF_32__
-    printf("        \"__STDC_UTF_32__\" : %d,\n", __STDC_UTF_32__);
+    printf("    __STDC_UTF_32__ = %d\n", __STDC_UTF_32__);
 #else
-    puts("        \"__STDC_UTF_32__\" : null,");
+    puts("    __STDC_UTF_32__ = undefined");
 #endif
 
 #ifdef __STDC_ANALYZABLE__
-    printf("        \"__STDC_ANALYZABLE__\" : %d,\n", __STDC_ANALYZABLE__);
+    printf("    __STDC_ANALYZABLE__ = %d\n", __STDC_ANALYZABLE__);
 #else
-    puts("        \"__STDC_ANALYZABLE__\" : null,");
-#endif
-
-#ifdef __STDC_IEC_559__
-    printf("        \"__STDC_IEC_559__\" : %d,\n", __STDC_IEC_559__);
-#else
-    puts("        \"__STDC_IEC_559__\" : null,");
+    puts("    __STDC_ANALYZABLE__ = undefined");
 #endif
 
 #ifdef __STDC_IEC_559_COMPLEX__
-    printf("        \"__STDC_IEC_559_COMPLEX__\" : %d,\n", __STDC_IEC_559_COMPLEX__);
+    printf("    __STDC_IEC_559_COMPLEX__ = %d\n", __STDC_IEC_559_COMPLEX__);
 #else
-    puts("        \"__STDC_IEC_559_COMPLEX__\" : null,");
+    puts("    __STDC_IEC_559_COMPLEX__ = undefined");
 #endif
 
 #ifdef __STDC_LIB_EXT1__
-    printf("        \"__STDC_LIB_EXT1__\" : \"%ldL\",\n", __STDC_LIB_EXT1__);
+    printf("    __STDC_LIB_EXT1__ = %d\n", __STDC_LIB_EXT1__);
 #else
-    puts("        \"__STDC_LIB_EXT1__\" : null,");
+    puts("    __STDC_LIB_EXT1__ = undefined");
 #endif
 
 #ifdef __STDC_NO_ATOMICS__
-    printf("        \"__STDC_NO_ATOMICS__\" : %d,\n", __STDC_NO_ATOMICS__);
+    printf("    __STDC_NO_ATOMICS__ = %d\n", __STDC_NO_ATOMICS__);
 #else
-    puts("        \"__STDC_NO_ATOMICS__\" : null,");
+    puts("    __STDC_NO_ATOMICS__ = undefined");
 #endif
 
-#ifdef __STDC_NO_COMPLEX
-    printf("        \"__STDC_NO_COMPLEX\" : %d,\n", __STDC_NO_COMPLEX);
+#ifdef __STDC_NO_COMPLEX__
+    printf("    __STDC_NO_COMPLEX__ = %d\n", __STDC_NO_COMPLEX__);
 #else
-    puts("        \"__STDC_NO_COMPLEX\" : null,");
+    puts("    __STDC_NO_COMPLEX__ = undefined");
 #endif
 
-#ifdef __STDC_NO_THREADS
-    printf("        \"__STDC_NO_THREADS\" : %d,\n", __STDC_NO_THREADS);
+#ifdef __STDC_NO_THREADS__
+    printf("    __STDC_NO_THREADS__ = %d\n", __STDC_NO_THREADS__);
 #else
-    puts("        \"__STDC_NO_THREADS\" : null,");
+    puts("    __STDC_NO_THREADS__ = undefined");
 #endif
 
-#ifdef __STDC_NO_VLA
-    printf("        \"__STDC_NO_VLA\" : %d,\n", __STDC_NO_VLA);
+#ifdef __STDC_NO_VLA__
+    printf("    __STDC_NO_VLA__ = %d\n", __STDC_NO_VLA__);
 #else
-    puts("        \"__STDC_NO_VLA\" : null,");
+    puts("    __STDC_NO_VLA__ = undefined");
 #endif
 
-    puts("    },");
+    putchar('\n');
 }
 
 static void show_limits_h(void) {
-    puts("    {");
-    puts("        \"node_kind\" : \"header\",");
-    puts("        \"header_name\" : \"<limits.h>\",");
-    printf("        \"CHAR_BIT\" : %d,\n", (int)CHAR_BIT);
-    printf("        \"SCHAR_MIN\" : %d,\n", (int)SCHAR_MIN);
-    printf("        \"SCHAR_MAX\" : %d,\n", (int)SCHAR_MAX);
-    printf("        \"UCHAR_MAX\" : %u,\n", (unsigned)UCHAR_MAX);
-    printf("        \"CHAR_MIN\" : %d,\n", (int)CHAR_MIN);
-    printf("        \"CHAR_MAX\" : %u,\n", (unsigned)CHAR_MAX);
+    puts("[<limits.h>]");
+    puts("    kind = header");
+    printf("    CHAR_BIT = %d\n", (int)CHAR_BIT);
+    printf("    SCHAR_MIN = %d\n", (int)SCHAR_MIN);
+    printf("    SCHAR_MAX = %d\n", (int)SCHAR_MAX);
+    printf("    UCHAR_MAX = %d\n", (int)UCHAR_MAX);
+    printf("    CHAR_MIN = %d\n", (int)CHAR_MIN);
+    printf("    CHAR_MAX = %d\n", (int)CHAR_MAX);
 #ifdef MB_LEN_MAX
-    printf("        \"MB_LEN_MAX\" : %u,\n", (unsigned)MB_LEN_MAX);
+    printf("    MB_LEN_MAX = %d\n", (int)MB_LEN_MAX);
 #else
-    puts("        \"MB_LEN_MAX\" : null");
+    puts("    MB_LEN_MAX = undefined");
 #endif
-    printf("        \"SHRT_MIN\" : %d,\n", (int)SHRT_MIN);
-    printf("        \"SHRT_MAX\" : %d,\n", (int)SHRT_MAX);
-    printf("        \"USHRT_MAX\" : %u,\n", (unsigned)USHRT_MAX);
-    printf("        \"INT_MIN\" : %d,\n", INT_MIN);
-    printf("        \"INT_MAX\" : %d,\n", INT_MAX);
-    printf("        \"UINT_MAX\" : %u,\n", UINT_MAX);
-    printf("        \"LONG_MIN\" : %ld,\n", LONG_MIN);
-    printf("        \"LONG_MAX\" : %ld,\n", LONG_MAX);
-    printf("        \"ULONG_MAX\" : %lu,\n", ULONG_MAX);
+    printf("    SHRT_MIN = %d\n", (int)SHRT_MIN);
+    printf("    SHRT_MAX = %d\n", (int)SHRT_MAX);
+    printf("    USHRT_MAX = %d\n", (int)USHRT_MAX);
+    printf("    INT_MIN = %d\n", INT_MIN);
+    printf("    INT_MAX = %d\n", INT_MAX);
+    printf("    UINT_MAX = %u\n", UINT_MAX);
+    printf("    LONG_MIN = %ld\n", LONG_MIN);
+    printf("    LONG_MAX = %ld\n", LONG_MAX);
+    printf("    ULONG_MAX = %lu\n", ULONG_MAX);
 #ifdef LLONG_MIN
-    printf("        \"LLONG_MIN\" : %lld,\n", LLONG_MIN);
+    printf("    LLONG_MIN = %lld\n", LLONG_MIN);
 #else
-    puts("        \"LLONG_MIN\" : null");
+    puts("    LLONG_MIN = undefined");
 #endif
 #ifdef LLONG_MAX
-    printf("        \"LLONG_MAX\" : %lld,\n", LLONG_MAX);
+    printf("    LLONG_MAX = %lld\n", LLONG_MAX);
 #else
-    puts("        \"LLONG_MAX\" : null");
+    puts("    LLONG_MIN = undefined");
 #endif
 #ifdef ULLONG_MAX
-    printf("        \"ULLONG_MAX\" : %llu,\n", ULLONG_MAX);
+    printf("    ULLONG_MAX = %llu\n", ULLONG_MAX);
 #else
-    puts("        \"ULLONG_MAX\" : null");
+    puts("    ULLONG_MIN = undefined");
 #endif
-    puts("    },");
+    putchar('\n');
 }
 
 static char *FLT_ROUNDS_meaning(int flt_rounds) {
     switch (flt_rounds) {
-        case -1: return "interminable";
+        case -1: return "indeterminable";
         case 0: return "toward zero";
         case 1: return "to nearest";
         case 2: return "toward positive infinity";
@@ -736,7 +720,7 @@ static char *FLT_ROUNDS_meaning(int flt_rounds) {
 
 static char *FLT_EVAL_METHOD_meaning(int flt_eval_method) {
     switch (flt_eval_method) {
-        case -1: return "interminable";
+        case -1: return "indeterminable";
         case 0: return "evaluate to range and precision of type";
         case 1: return "evaluate using double or long double";
         case 2: return "evaluate using long double";
@@ -746,7 +730,7 @@ static char *FLT_EVAL_METHOD_meaning(int flt_eval_method) {
 
 static char *HAS_SUBNORM_meaning(int has_subnorm) {
     switch (has_subnorm) {
-        case -1: return "interminable";
+        case -1: return "indeterminable";
         case 0: return "absent";
         case 1: return "present";
         default: return "implementation-defined";
@@ -754,281 +738,280 @@ static char *HAS_SUBNORM_meaning(int has_subnorm) {
 }
 
 static void show_float_h(void) {
-    puts("    {");
-    puts("        \"node_kind\" : \"header\",");
-    puts("        \"header_name\" : \"<float.h>\",");
+    puts("[<float.h>]");
+    puts("    kind = header");
 
 #ifdef FLT_ROUNDS
-    printf("        \"FLT_ROUNDS\" : %d,\n", FLT_ROUNDS);
-    printf("        \"FLT_ROUNDS_meaning\" : \"%s\",\n", FLT_ROUNDS_meaning(FLT_ROUNDS));
+    printf("    FLT_ROUNDS = %d\n", FLT_ROUNDS);
+    printf("    FLT_ROUNDS_meaning = \"%s\"\n", FLT_ROUNDS_meaning(FLT_ROUNDS));
 #else
-    printf("        \"FLT_ROUNDS\" : null,\n");
+    puts("    FLT_ROUNDS = undefined");
 #endif
 
 #ifdef FLT_EVAL_METHOD
-    printf("        \"FLT_EVAL_METHOD\" : %d,\n", FLT_EVAL_METHOD);
-    printf("        \"FLT_EVAL_METHOD_meaning\" : \"%s\",\n", FLT_EVAL_METHOD_meaning(FLT_EVAL_METHOD));
+    printf("    FLT_EVAL_METHOD = %d\n", FLT_EVAL_METHOD);
+    printf("    FLT_EVAL_METHOD_meaning = \"%s\"\n", FLT_EVAL_METHOD_meaning(FLT_EVAL_METHOD));
 #else
-    printf("        \"FLT_EVAL_METHOD\" : null,\n");
+    puts("    FLT_EVAL_METHOD = undefined");
 #endif
 
 #ifdef FLT_HAS_SUBNORM
-    printf("        \"FLT_HAS_SUBNORM\" : %d,\n", FLT_HAS_SUBNORM);
-    printf("        \"FLT_HAS_SUBNORM_meaning\" : \"%s\",\n", HAS_SUBNORM_meaning(FLT_HAS_SUBNORM));
+    printf("    FLT_HAS_SUBNORM = %d\n", FLT_HAS_SUBNORM);
+    printf("    FLT_HAS_SUBNORM_meaning = \"%s\"\n", HAS_SUBNORM_meaning(FLT_HAS_SUBNORM));
 #else
-    printf("        \"FLT_HAS_SUBNORM\" : null,\n");
+    puts("    FLT_HAS_SUBNORM = undefined");
 #endif
 
 #ifdef DBL_HAS_SUBNORM
-    printf("        \"DBL_HAS_SUBNORM\" : %d,\n", DBL_HAS_SUBNORM);
-    printf("        \"DBL_HAS_SUBNORM_meaning\" : \"%s\",\n", HAS_SUBNORM_meaning(DBL_HAS_SUBNORM));
+    printf("    DBL_HAS_SUBNORM = %d\n", DBL_HAS_SUBNORM);
+    printf("    DBL_HAS_SUBNORM_meaning = \"%s\"\n", HAS_SUBNORM_meaning(DBL_HAS_SUBNORM));
 #else
-    printf("        \"DBL_HAS_SUBNORM\" : null,\n");
+    puts("    DBL_HAS_SUBNORM = undefined");
 #endif
 
 #ifdef LDBL_HAS_SUBNORM
-    printf("        \"LDBL_HAS_SUBNORM\" : %d,\n", LDBL_HAS_SUBNORM);
-    printf("        \"LDBL_HAS_SUBNORM_meaning\" : \"%s\",\n", HAS_SUBNORM_meaning(LDBL_HAS_SUBNORM));
+    printf("    LDBL_HAS_SUBNORM = %d\n", LDBL_HAS_SUBNORM);
+    printf("    LDBL_HAS_SUBNORM_meaning = \"%s\"\n", HAS_SUBNORM_meaning(LDBL_HAS_SUBNORM));
 #else
-    printf("        \"LDBL_HAS_SUBNORM\" : null,\n");
+    puts("    LDBL_HAS_SUBNORM = undefined");
 #endif
 
-    printf("        \"FLT_RADIX\" : %d,\n", FLT_RADIX);
-
-    printf("        \"FLT_MANT_DIG\" : %d,\n", FLT_MANT_DIG);
-    printf("        \"DBL_MANT_DIG\" : %d,\n", DBL_MANT_DIG);
-    printf("        \"LDBL_MANT_DIG\" : %d,\n", LDBL_MANT_DIG);
+    printf("    FLT_RADIX = %d\n", FLT_RADIX);
+    printf("    FLT_MANT_DIG = %d\n", FLT_MANT_DIG);
+    printf("    DBL_MANT_DIG = %d\n", DBL_MANT_DIG);
+    printf("    LDBL_MANT_DIG = %d\n", LDBL_MANT_DIG);
 
 #ifdef FLT_DECIMAL_DIG
-    printf("        \"FLT_DECIMAL_DIG\" : %d,\n", FLT_DECIMAL_DIG);
+    printf("    FLT_DECIMAL_DIG = %d\n", FLT_DECIMAL_DIG);
 #else
-    printf("        \"FLT_DECIMAL_DIG\" : null,\n");
+    puts("    FLT_DECIMAL_DIG = undefined");
 #endif
 #ifdef DBL_DECIMAL_DIG
-    printf("        \"DBL_DECIMAL_DIG\" : %d,\n", DBL_DECIMAL_DIG);
+    printf("    DBL_DECIMAL_DIG = %d\n", DBL_DECIMAL_DIG);
 #else
-    printf("        \"DBL_DECIMAL_DIG\" : null,\n");
+    puts("    DBL_DECIMAL_DIG = undefined");
 #endif
 #ifdef LDBL_DECIMAL_DIG
-    printf("        \"LDBL_DECIMAL_DIG\" : %d,\n", LDBL_DECIMAL_DIG);
+    printf("    LDBL_DECIMAL_DIG = %d\n", LDBL_DECIMAL_DIG);
 #else
-    printf("        \"LDBL_DECIMAL_DIG\" : null,\n");
+    puts("    LDBL_DECIMAL_DIG = undefined");
 #endif
 #ifdef DECIMAL_DIG
-    printf("        \"DECIMAL_DIG\" : %d,\n", DECIMAL_DIG);
+    printf("    DECIMAL_DIG = %d\n", DECIMAL_DIG);
 #else
-    printf("        \"DECIMAL_DIG\" : null,\n");
+    puts("    DECIMAL_DIG = undefined");
 #endif
 
-    printf("        \"FLT_DIG\" : %d,\n", FLT_DIG);
-    printf("        \"DBL_DIG\" : %d,\n", DBL_DIG);
-    printf("        \"LDBL_DIG\" : %d,\n", LDBL_DIG);
+    printf("    FLT_DIG = %d\n", FLT_DIG);
+    printf("    DBL_DIG = %d\n", DBL_DIG);
+    printf("    LDBL_DIG = %d\n", LDBL_DIG);
 
-    printf("        \"FLT_MIN_EXP\" : %d,\n", FLT_MIN_EXP);
-    printf("        \"DBL_MIN_EXP\" : %d,\n", DBL_MIN_EXP);
-    printf("        \"LDBL_MIN_EXP\" : %d,\n", LDBL_MIN_EXP);
+    printf("    FLT_MIN_EXP = %d\n", FLT_MIN_EXP);
+    printf("    DBL_MIN_EXP = %d\n", DBL_MIN_EXP);
+    printf("    LDBL_MIN_EXP = %d\n", LDBL_MIN_EXP);
 
-    printf("        \"FLT_MIN_10_EXP\" : %d,\n", FLT_MIN_10_EXP);
-    printf("        \"DBL_MIN_10_EXP\" : %d,\n", DBL_MIN_10_EXP);
-    printf("        \"LDBL_MIN_10_EXP\" : %d,\n", LDBL_MIN_10_EXP);
+    printf("    FLT_MIN_10_EXP = %d\n", FLT_MIN_10_EXP);
+    printf("    DBL_MIN_10_EXP = %d\n", DBL_MIN_10_EXP);
+    printf("    LDBL_MIN_10_EXP = %d\n", LDBL_MIN_10_EXP);
 
-    printf("        \"FLT_MAX_EXP\" : %d,\n", FLT_MAX_EXP);
-    printf("        \"DBL_MAX_EXP\" : %d,\n", DBL_MAX_EXP);
-    printf("        \"LDBL_MAX_EXP\" : %d,\n", LDBL_MAX_EXP);
+    printf("    FLT_MAX_EXP = %d\n", FLT_MAX_EXP);
+    printf("    DBL_MAX_EXP = %d\n", DBL_MAX_EXP);
+    printf("    LDBL_MAX_EXP = %d\n", LDBL_MAX_EXP);
 
-    printf("        \"FLT_MAX_10_EXP\" : %d,\n", FLT_MAX_10_EXP);
-    printf("        \"DBL_MAX_10_EXP\" : %d,\n", DBL_MAX_10_EXP);
-    printf("        \"LDBL_MAX_10_EXP\" : %d,\n", LDBL_MAX_10_EXP);
+    printf("    FLT_MAX_10_EXP = %d\n", FLT_MAX_10_EXP);
+    printf("    DBL_MAX_10_EXP = %d\n", DBL_MAX_10_EXP);
+    printf("    LDBL_MAX_10_EXP = %d\n", LDBL_MAX_10_EXP);
 
-    printf("        \"FLT_MAX\" : %e,\n", FLT_MAX);
-    printf("        \"DBL_MAX\" : %e,\n", DBL_MAX);
-    printf("        \"LDBL_MAX\" : %Le,\n", LDBL_MAX);
+    printf("    FLT_MAX = %e\n", FLT_MAX);
+    printf("    DBL_MAX = %e\n", DBL_MAX);
+    printf("    LDBL_MAX = %Le\n", LDBL_MAX);
 
-    printf("        \"FLT_EPSILON\" : %e,\n", FLT_EPSILON);
-    printf("        \"DBL_EPSILON\" : %e,\n", DBL_EPSILON);
-    printf("        \"LDBL_EPSILON\" : %Le,\n", LDBL_EPSILON);
+    printf("    FLT_EPSILON = %e\n", FLT_EPSILON);
+    printf("    DBL_EPSILON = %e\n", DBL_EPSILON);
+    printf("    LDBL_EPSILON = %Le\n", LDBL_EPSILON);
 
-    printf("        \"FLT_MIN\" : %e,\n", FLT_MIN);
-    printf("        \"DBL_MIN\" : %e,\n", DBL_MIN);
-    printf("        \"LDBL_MIN\" : %Le,\n", LDBL_MIN);
+    printf("    FLT_MIN = %e\n", FLT_MIN);
+    printf("    DBL_MIN = %e\n", DBL_MIN);
+    printf("    LDBL_MIN = %Le\n", LDBL_MIN);
 
 #ifdef FLT_TRUE_MIN
-    printf("        \"FLT_TRUE_MIN\" : %e,\n", FLT_TRUE_MIN);
+    printf("    FLT_TRUE_MIN = %e\n", FLT_TRUE_MIN);
 #else
-    printf("        \"FLT_TRUE_MIN\" : null,\n");
+    puts("    FLT_TRUE_MIN = undefined");
 #endif
 #ifdef DBL_TRUE_MIN
-    printf("        \"DBL_TRUE_MIN\" : %e,\n", DBL_TRUE_MIN);
+    printf("    DBL_TRUE_MIN = %e\n", DBL_TRUE_MIN);
 #else
-    printf("        \"DBL_TRUE_MIN\" : null,\n");
+    puts("    DBL_TRUE_MIN = undefined");
 #endif
 #ifdef LDBL_TRUE_MIN
-    printf("        \"LDBL_TRUE_MIN\" : %Le,\n", LDBL_TRUE_MIN);
+    printf("    LDBL_TRUE_MIN = %Le\n", LDBL_TRUE_MIN);
 #else
-    printf("        \"LDBL_TRUE_MIN\" : null,\n");
+    puts("    LDBL_TRUE_MIN = undefined");
 #endif
 
-    puts("    },");
+    putchar('\n');
 }
 
 static void show_stdint_h(void) {
-    puts("    {");
-    puts("        \"node_kind\" : \"header\",");
-    puts("        \"header_name\" : \"<stdint.h>\",");
+    puts("[<stdint.h>]");
+    puts("    kind = header");
 #ifdef STDINT_H_EXISTS
-    puts("        \"header_exists\" : true,");
+    puts("    header_exists = true");
 
 #ifdef INT8_MIN
-    printf("        \"INT8_MIN\" : %s,\n", signed_image(INT8_MIN));
+    printf("    INT8_MIN = %s\n", signed_image(INT8_MIN));
 #else
-    printf("        \"INT8_MIN\" : null,\n");
+    puts("    INT8_MIN = undefined");
 #endif
 #ifdef INT8_MAX
-    printf("        \"INT8_MAX\" : %s,\n", signed_image(INT8_MAX));
+    printf("    INT8_MAX = %s\n", signed_image(INT8_MAX));
 #else
-    printf("        \"INT8_MAX\" : null,\n");
+    puts("    INT8_MAX = undefined");
 #endif
 #ifdef UINT8_MAX
-    printf("        \"UINT8_MAX\" : %s,\n", unsigned_image(UINT8_MAX));
+    printf("    UINT8_MAX = %s\n", unsigned_image(UINT8_MAX));
 #else
-    printf("        \"UINT8_MAX\" : null,\n");
+    puts("    UINT8_MAX = undefined");
 #endif
+
 #ifdef INT16_MIN
-    printf("        \"INT16_MIN\" : %s,\n", signed_image(INT16_MIN));
+    printf("    INT16_MIN = %s\n", signed_image(INT16_MIN));
 #else
-    printf("        \"INT16_MIN\" : null,\n");
+    puts("    INT16_MIN = undefined");
 #endif
 #ifdef INT16_MAX
-    printf("        \"INT16_MAX\" : %s,\n", signed_image(INT16_MAX));
+    printf("    INT16_MAX = %s\n", signed_image(INT16_MAX));
 #else
-    printf("        \"INT16_MAX\" : null,\n");
+    puts("    INT16_MAX = undefined");
 #endif
 #ifdef UINT16_MAX
-    printf("        \"UINT16_MAX\" : %s,\n", unsigned_image(UINT16_MAX));
+    printf("    UINT16_MAX = %s\n", unsigned_image(UINT16_MAX));
 #else
-    printf("        \"UINT16_MAX\" : null,\n");
+    puts("    UINT16_MAX = undefined");
 #endif
+
 #ifdef INT32_MIN
-    printf("        \"INT32_MIN\" : %s,\n", signed_image(INT32_MIN));
+    printf("    INT32_MIN = %s\n", signed_image(INT32_MIN));
 #else
-    printf("        \"INT32_MIN\" : null,\n");
+    puts("    INT32_MIN = undefined");
 #endif
 #ifdef INT32_MAX
-    printf("        \"INT32_MAX\" : %s,\n", signed_image(INT32_MAX));
+    printf("    INT32_MAX = %s\n", signed_image(INT32_MAX));
 #else
-    printf("        \"INT32_MAX\" : null,\n");
+    puts("    INT32_MAX = undefined");
 #endif
 #ifdef UINT32_MAX
-    printf("        \"UINT32_MAX\" : %s,\n", unsigned_image(UINT32_MAX));
+    printf("    UINT32_MAX = %s\n", unsigned_image(UINT32_MAX));
 #else
-    printf("        \"UINT32_MAX\" : null,\n");
+    puts("    UINT32_MAX = undefined");
 #endif
+
 #ifdef INT64_MIN
-    printf("        \"INT64_MIN\" : %s,\n", signed_image(INT64_MIN));
+    printf("    INT64_MIN = %s\n", signed_image(INT64_MIN));
 #else
-    printf("        \"INT64_MIN\" : null,\n");
+    puts("    INT64_MIN = undefined");
 #endif
 #ifdef INT64_MAX
-    printf("        \"INT64_MAX\" : %s,\n", signed_image(INT64_MAX));
+    printf("    INT64_MAX = %s\n", signed_image(INT64_MAX));
 #else
-    printf("        \"INT64_MAX\" : null,\n");
+    puts("    INT64_MAX = undefined");
 #endif
 #ifdef UINT64_MAX
-    printf("        \"UINT64_MAX\" : %s,\n", unsigned_image(UINT64_MAX));
+    printf("    UINT64_MAX = %s\n", unsigned_image(UINT64_MAX));
 #else
-    printf("        \"UINT64_MAX\" : null,\n");
+    puts("    UINT64_MAX = undefined");
 #endif
+
 #ifdef INTMAX_MIN
-    printf("        \"INTMAX_MIN\" : %s,\n", signed_image(INTMAX_MIN));
+    printf("    INTMAX_MIN = %s\n", signed_image(INTMAX_MIN));
 #else
-    printf("        \"INTMAX_MIN\" : null,\n");
+    puts("    INTMAX_MIN = undefined");
 #endif
 #ifdef INTMAX_MAX
-    printf("        \"INTMAX_MAX\" : %s,\n", signed_image(INTMAX_MAX));
+    printf("    INTMAX_MAX = %s\n", signed_image(INTMAX_MAX));
 #else
-    printf("        \"INTMAX_MAX\" : null,\n");
+    puts("    INTMAX_MAX = undefined");
 #endif
 #ifdef UINTMAX_MAX
-    printf("        \"UINTMAX_MAX\" : %s,\n", unsigned_image(UINTMAX_MAX));
+    printf("    UINTMAX_MAX = %s\n", unsigned_image(UINTMAX_MAX));
 #else
-    printf("        \"UINTMAX_MAX\" : null,\n");
+    puts("    UINTMAX_MAX = undefined");
 #endif
 
-    printf("        \"INT_LEAST8_MIN\" : %s,\n", signed_image(INT_LEAST8_MIN));
-    printf("        \"INT_LEAST8_MAX\" : %s,\n", signed_image(INT_LEAST8_MAX));
-    printf("        \"UINT_LEAST8_MAX\" : %s,\n", unsigned_image(UINT_LEAST8_MAX));
-    printf("        \"INT_LEAST16_MIN\" : %s,\n", signed_image(INT_LEAST16_MIN));
-    printf("        \"INT_LEAST16_MAX\" : %s,\n", signed_image(INT_LEAST16_MAX));
-    printf("        \"UINT_LEAST16_MAX\" : %s,\n", unsigned_image(UINT_LEAST16_MAX));
-    printf("        \"INT_LEAST32_MIN\" : %s,\n", signed_image(INT_LEAST32_MIN));
-    printf("        \"INT_LEAST32_MAX\" : %s,\n", signed_image(INT_LEAST32_MAX));
-    printf("        \"UINT_LEAST32_MAX\" : %s,\n", unsigned_image(UINT_LEAST32_MAX));
-    printf("        \"INT_LEAST64_MIN\" : %s,\n", signed_image(INT_LEAST64_MIN));
-    printf("        \"INT_LEAST64_MAX\" : %s,\n", signed_image(INT_LEAST64_MAX));
-    printf("        \"UINT_LEAST64_MAX\" : %s,\n", unsigned_image(UINT_LEAST64_MAX));
+    printf("    INT_LEAST8_MIN = %s\n", signed_image(INT_LEAST8_MIN));
+    printf("    INT_LEAST8_MAX = %s\n", signed_image(INT_LEAST8_MAX));
+    printf("    UINT_LEAST8_MAX = %s\n", unsigned_image(UINT_LEAST8_MAX));
+    printf("    INT_LEAST16_MIN = %s\n", signed_image(INT_LEAST16_MIN));
+    printf("    INT_LEAST16_MAX = %s\n", signed_image(INT_LEAST16_MAX));
+    printf("    UINT_LEAST16_MAX = %s\n", unsigned_image(UINT_LEAST16_MAX));
+    printf("    INT_LEAST32_MIN = %s\n", signed_image(INT_LEAST32_MIN));
+    printf("    INT_LEAST32_MAX = %s\n", signed_image(INT_LEAST32_MAX));
+    printf("    UINT_LEAST32_MAX = %s\n", unsigned_image(UINT_LEAST32_MAX));
+    printf("    INT_LEAST64_MIN = %s\n", signed_image(INT_LEAST64_MIN));
+    printf("    INT_LEAST64_MAX = %s\n", signed_image(INT_LEAST64_MAX));
+    printf("    UINT_LEAST64_MAX = %s\n", unsigned_image(UINT_LEAST64_MAX));
 
-    printf("        \"INT_FAST8_MIN\" : %s,\n", signed_image(INT_FAST8_MIN));
-    printf("        \"INT_FAST8_MAX\" : %s,\n", signed_image(INT_FAST8_MAX));
-    printf("        \"UINT_FAST8_MAX\" : %s,\n", unsigned_image(UINT_FAST8_MAX));
-    printf("        \"INT_FAST16_MIN\" : %s,\n", signed_image(INT_FAST16_MIN));
-    printf("        \"INT_FAST16_MAX\" : %s,\n", signed_image(INT_FAST16_MAX));
-    printf("        \"UINT_FAST16_MAX\" : %s,\n", unsigned_image(UINT_FAST16_MAX));
-    printf("        \"INT_FAST32_MIN\" : %s,\n", signed_image(INT_FAST32_MIN));
-    printf("        \"INT_FAST32_MAX\" : %s,\n", signed_image(INT_FAST32_MAX));
-    printf("        \"UINT_FAST32_MAX\" : %s,\n", unsigned_image(UINT_FAST32_MAX));
-    printf("        \"INT_FAST64_MIN\" : %s,\n", signed_image(INT_FAST64_MIN));
-    printf("        \"INT_FAST64_MAX\" : %s,\n", signed_image(INT_FAST64_MAX));
-    printf("        \"UINT_FAST64_MAX\" : %s,\n", unsigned_image(UINT_FAST64_MAX));
+    printf("    INT_FAST8_MIN = %s\n", signed_image(INT_FAST8_MIN));
+    printf("    INT_FAST8_MAX = %s\n", signed_image(INT_FAST8_MAX));
+    printf("    UINT_FAST8_MAX = %s\n", unsigned_image(UINT_FAST8_MAX));
+    printf("    INT_FAST16_MIN = %s\n", signed_image(INT_FAST16_MIN));
+    printf("    INT_FAST16_MAX = %s\n", signed_image(INT_FAST16_MAX));
+    printf("    UINT_FAST16_MAX = %s\n", unsigned_image(UINT_FAST16_MAX));
+    printf("    INT_FAST32_MIN = %s\n", signed_image(INT_FAST32_MIN));
+    printf("    INT_FAST32_MAX = %s\n", signed_image(INT_FAST32_MAX));
+    printf("    UINT_FAST32_MAX = %s\n", unsigned_image(UINT_FAST32_MAX));
+    printf("    INT_FAST64_MIN = %s\n", signed_image(INT_FAST64_MIN));
+    printf("    INT_FAST64_MAX = %s\n", signed_image(INT_FAST64_MAX));
+    printf("    UINT_FAST64_MAX = %s\n", unsigned_image(UINT_FAST64_MAX));
 
-    printf("        \"INTPTR_MIN\" : %s,\n", signed_image(INTPTR_MIN));
-    printf("        \"INTPTR_MAX\" : %s,\n", signed_image(INTPTR_MAX));
-    printf("        \"UINTPTR_MAX\" : %s,\n", unsigned_image(UINTPTR_MAX));
+    printf("    INTPTR_MIN = %s\n", signed_image(INTPTR_MIN));
+    printf("    INTPTR_MAX = %s\n", signed_image(INTPTR_MAX));
+    printf("    UINTPTR_MAX = %s\n", unsigned_image(UINTPTR_MAX));
 
-    printf("        \"PTRDIFF_MIN\" : %s,\n", signed_image(PTRDIFF_MIN));
-    printf("        \"PTRDIFF_MAX\" : %s,\n", signed_image(PTRDIFF_MAX));
+    printf("    PTRDIFF_MIN = %s\n", signed_image(PTRDIFF_MIN));
+    printf("    PTRDIFF_MAX = %s\n", signed_image(PTRDIFF_MAX));
 
 #ifdef SIG_ATOMIC_MIN
 #if SIG_ATOMIC_MIN == 0
-    printf("        \"SIG_ATOMIC_MIN\" : %s,\n", unsigned_image(SIG_ATOMIC_MIN));
-    printf("        \"SIG_ATOMIC_MAX\" : %s,\n", unsigned_image(SIG_ATOMIC_MAX));
+    printf("    SIG_ATOMIC_MIN = %s\n", unsigned_image(SIG_ATOMIC_MIN));
+    printf("    SIG_ATOMIC_MAX = %s\n", unsigned_image(SIG_ATOMIC_MAX));
 #else
-    printf("        \"SIG_ATOMIC_MIN\" : %s,\n", signed_image(SIG_ATOMIC_MIN));
-    printf("        \"SIG_ATOMIC_MAX\" : %s,\n", signed_image(SIG_ATOMIC_MAX));
+    printf("    SIG_ATOMIC_MIN = %s\n", signed_image(SIG_ATOMIC_MIN));
+    printf("    SIG_ATOMIC_MAX = %s\n", signed_image(SIG_ATOMIC_MAX));
 #endif
 #endif
 
-    printf("        \"SIZE_MAX\" : %s,\n", unsigned_image(SIZE_MAX));
+    printf("    SIZE_MAX = %s\n", unsigned_image(SIZE_MAX));
 
 #ifdef WCHAR_MIN
 #if WCHAR_MIN == 0
-    printf("        \"WCHAR_MIN\" : %s,\n", unsigned_image(WCHAR_MIN));
-    printf("        \"WCHAR_MAX\" : %s,\n", unsigned_image(WCHAR_MAX));
+    printf("    WCHAR_MIN = %s\n", unsigned_image(WCHAR_MIN));
+    printf("    WCHAR_MAX = %s\n", unsigned_image(WCHAR_MAX));
 #else
-    printf("        \"WCHAR_MIN\" : %s,\n", signed_image(WCHAR_MIN));
-    printf("        \"WCHAR_MAX\" : %s,\n", signed_image(WCHAR_MAX));
+    printf("    WCHAR_MIN = %s\n", signed_image(WCHAR_MIN));
+    printf("    WCHAR_MAX = %s\n", signed_image(WCHAR_MAX));
 #endif
 #endif
 
 #ifdef WINT_MIN
 #if WINT_MIN == 0
-    printf("        \"WINT_MIN\" : %s,\n", unsigned_image(WINT_MIN));
-    printf("        \"WINT_MAX\" : %s,\n", unsigned_image(WINT_MAX));
+    printf("    WINT_MIN = %s\n", unsigned_image(WINT_MIN));
+    printf("    WINT_MAX = %s\n", unsigned_image(WINT_MAX));
 #else
-    printf("        \"WINT_MIN\" : %s,\n", signed_image(WINT_MIN));
-    printf("        \"WINT_MAX\" : %s,\n", signed_image(WINT_MAX));
+    printf("    WINT_MIN = %s\n", signed_image(WINT_MIN));
+    printf("    WINT_MAX = %s\n", signed_image(WINT_MAX));
 #endif
 #endif
 
 #else
-    puts("        \"header_exists\" : false");
+    puts("    header_exists = false");
 #endif
-    puts("    },");
+    putchar('\n');
 }
 
 int main(int argc, char **argv) {
     set_formats();
-
-    puts("[");
 
     show_configuration(argc, argv);
     show_predefined_macros();
@@ -1098,32 +1081,30 @@ int main(int argc, char **argv) {
     SHOW_RAW_TYPE_WITH_NAME(simple_func_ptr, "void(*)(void)");
     SHOW_RAW_TYPE_WITH_NAME(complex_func_ptr, "double(*)(int*,char**)");
 
-    check_size("integer", integer_sizes, 8);
-    check_size("integer", integer_sizes, 16);
-    check_size("integer", integer_sizes, 32);
-    check_size("integer", integer_sizes, 64);
+    check_size("    integer", integer_sizes, 8);
+    check_size("    integer", integer_sizes, 16);
+    check_size("    integer", integer_sizes, 32);
+    check_size("    integer", integer_sizes, 64);
 
     if (huge_integer) {
-        puts("    {");
-        puts("        \"node_kind\" : \"comment\",");
-        printf("        \"comment\" : \"There is at least one integer type bigger than %d bits\"\n",
+        puts("        {");
+        puts("            \"node_kind\" : \"comment\",");
+        printf("            \"comment\" : \"There is at least one integer type bigger than %d bits\"\n",
                MAX_SIZE);
-        puts("    },");
+        puts("        },");
     }
 
-    check_size("floating-point", float_sizes, 32);
-    check_size("floating-point", float_sizes, 64);
-    check_size("floating-point", float_sizes, 128);
+    check_size("    floating-point", float_sizes, 32);
+    check_size("    floating-point", float_sizes, 64);
+    check_size("    floating-point", float_sizes, 128);
 
     if (huge_float) {
-        puts("    {");
-        puts("        \"node_kind\" : \"comment\",");
-        printf("       \"comment\" : \"There is at least one float type bigger than %d bits\"\n",
+        puts("        {");
+        puts("            \"node_kind\" : \"comment\",");
+        printf("           \"comment\" : \"There is at least one float type bigger than %d bits\"\n",
                MAX_SIZE);
-        puts("    },");
+        puts("        },");
     }
-
-    puts("]");
 
     exit(EXIT_SUCCESS);
 } /* main */

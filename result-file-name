@@ -6,8 +6,8 @@ use warnings;
 my $config_guess = `./config.guess 2>/dev/null`;
 if ($? == 0) {
     chomp $config_guess;
-    print "$config_guess.json.in\n";
+    print "$config_guess.ini\n";
 }
 else {
-    print "results.json.in\n";
+    print "results.ini\n";
 }
