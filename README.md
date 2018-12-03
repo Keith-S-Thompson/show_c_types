@@ -44,9 +44,14 @@ The output consists of a sequence of sections.
 The "configuration" record shows the version number of this program,
 currently `"2018-12-02"`.
 
-Currently, the `*.json` files in the `results/` directory are from
-an earlier version of this program. I'll update them [Real Soon
-Now](http://www.jargon.net/jargonfile/r/RealSoonNow.html).
+The `results_0` directory (previously named `old-results`) contains
+results from an older version of this program that printed results
+in plain text.
+
+`results_1` contains results from a later version that generated
+pseudo-JSON output.
+
+`results` contains results from the current version.
 
 If you've run this on a system for which I don't already have results
 in the `results` directory, please e-mail the generated `*.ini`
