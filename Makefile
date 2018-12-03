@@ -53,7 +53,7 @@
 #     -DENABLE_STDBOOL_H -DENABLE_LONG_LONG
 # For others, consult your compiler's documentation.
 
-CC=gcc -std=c99 -pedantic
+CC=gcc -std=c11 -pedantic
 # For gcc with the C90 standard:
 # CC=gcc -std=c90 -pedantic
 # For gcc with the C11 standard:
