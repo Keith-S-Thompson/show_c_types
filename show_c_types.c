@@ -174,31 +174,31 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
     do {                                                              \
         const int size = sizeof(type) * CHAR_BIT;                     \
         const int align = ALIGNOF(type) * CHAR_BIT;                   \
-        printf("[%s]\n", #type);                                      \
-        puts("    kind = integer_type");                                    \
-        printf("    size = %d\n", size);                                    \
+        printf("[%s]\n", space_to_hyphen(#type));                     \
+        puts("    kind = integer_type");                              \
+        printf("    size = %d\n", size);                              \
         if (min != 0) {                                               \
             if (IS_SIGNED(type)) {                                    \
-                printf("    min = %s\n", signed_image(min));                \
+                printf("    min = %s\n", signed_image(min));          \
             }                                                         \
             else {                                                    \
-                printf("    min = %s\n", unsigned_image(min));              \
+                printf("    min = %s\n", unsigned_image(min));        \
             }                                                         \
         }                                                             \
         if (max != 0) {                                               \
             if (IS_SIGNED(type)) {                                    \
-                printf("    max = %s\n", signed_image(max));                \
+                printf("    max = %s\n", signed_image(max));          \
             }                                                         \
             else {                                                    \
-                printf("    max = %s\n", unsigned_image(max));              \
+                printf("    max = %s\n", unsigned_image(max));        \
             }                                                         \
         }                                                             \
-        printf("    signedness = %s\n",                                     \
+        printf("    signedness = %s\n",                               \
                (IS_SIGNED(type) ? "signed" : "unsigned"));            \
         if (endianness != NULL) {                                     \
-            printf("    endianness = %s\n", endianness);                    \
+            printf("    endianness = %s\n", endianness);              \
         }                                                             \
-        printf("    align = %d\n", align);                                  \
+        printf("    align = %d\n", align);                            \
         if (size <= MAX_SIZE) {                                       \
             integer_sizes[size] = true;                               \
         }                                                             \
@@ -222,21 +222,21 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         free(hex_one);                                               \
         free(hex_minus_sixteen);                                     \
         free(hex_one_million);                                       \
-        printf("[%s]\n", #type);                                     \
-        puts("    kind = floating_type");                                  \
-        printf("    size = %d\n", size);                                   \
-        printf("    alignment = %d\n", align);                             \
+        printf("[%s]\n", space_to_hyphen(#type));                    \
+        puts("    kind = floating_type");                            \
+        printf("    size = %d\n", size);                             \
+        printf("    alignment = %d\n", align);                       \
         if (mant_dig != 0) {                                         \
-            printf("    mantissa_bits = %d\n", mant_dig);                  \
+            printf("    mantissa_bits = %d\n", mant_dig);            \
         }                                                            \
         if (min_exp != 0) {                                          \
-            printf("    min_exp = %d\n", min_exp);                         \
+            printf("    min_exp = %d\n", min_exp);                   \
         }                                                            \
         if (max_exp != 0) {                                          \
-            printf("    max_exp = %d\n", max_exp);                         \
+            printf("    max_exp = %d\n", max_exp);                   \
         }                                                            \
         if (one != 0.0) {                                            \
-            printf("    looks_like = \"%s\"\n", looks_like);               \
+            printf("    looks_like = \"%s\"\n", looks_like);         \
         }                                                            \
         if (size <= MAX_SIZE) {                                      \
             float_sizes[size] = true;                                \
@@ -252,9 +252,9 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         const int size = sizeof(type) * CHAR_BIT;      \
         const int align = ALIGNOF(type) * CHAR_BIT;    \
         printf("[%s]\n", name);                        \
-        puts("    kind = type");                             \
-        printf("    size = %d\n", size);                     \
-        printf("    alignment = %d\n", align);               \
+        puts("    kind = type");                       \
+        printf("    size = %d\n", size);               \
+        printf("    alignment = %d\n", align);         \
         putchar('\n');                                 \
     } while(0)
 
@@ -851,6 +851,18 @@ static void show_float_h(void) {
 #endif
 
     putchar('\n');
+}
+
+/* Not reentrant */
+static char *space_to_hyphen(const char *s) {
+    static char result[100];
+    strcpy(result, s);
+    for (int i = 0; result[i] != '\0'; i ++) {
+        if (result[i] == ' ') {
+            result[i] = '-';
+        }
+    }
+    return result;
 }
 
 static void show_stdint_h(void) {
