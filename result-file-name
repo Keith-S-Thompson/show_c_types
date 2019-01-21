@@ -1,13 +1,8 @@
-#!/usr/bin/perl
+#!/bin/sh
 
-use strict;
-use warnings;
-
-my $config_guess = `./config.guess 2>/dev/null`;
-if ($? == 0) {
-    chomp $config_guess;
-    print "$config_guess.ini\n";
-}
-else {
-    print "results.ini\n";
-}
+config_guess=$(./config.guess 2>/dev/null)
+if [ $? = 0 ] ; then
+    echo "$config_guess.ini"
+else
+    echo "results.ini"
+fi
