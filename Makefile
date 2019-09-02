@@ -42,12 +42,6 @@
 #     DISABLE_STDINT_H
 #     DISABLE_STDBOOL_H
 #
-# By default, we assume that time_t and clock_t are integer types.
-# Define either or both of the following macros to indicate that time_t
-# and/or clock_t are floating-point types:
-#     FLOATING_TIME_T           (time_t is a floating-point type)
-#     FLOATING_CLOCK_T          (clock_t is a floating-point type)
-#
 # Update the definition of "CC" to set any of these macros.
 # For many C compilers, the "-D" option can be used for this purpose, e.g.:
 #     -DENABLE_STDBOOL_H -DENABLE_LONG_LONG

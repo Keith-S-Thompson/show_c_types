@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Keith Thompson
+ * Copyright (C) 2019 Keith Thompson
  */
 
 /*
@@ -38,7 +38,7 @@
 #include <float.h>
 #include <time.h>
 
-#define SHOW_C_TYPES_VERSION "2018-12-02"
+#define SHOW_C_TYPES_VERSION "2019-09-02"
 /*
  * The version is the date in YYYY-MM-DD format.
  * If you modify this program, please update this definition.
@@ -318,12 +318,9 @@ define_endianness_function(uintmax_t,          uintmax_t_endianness)
 define_endianness_function(ptrdiff_t,          ptrdiff_t_endianness)
 define_endianness_function(size_t,             size_t_endianness)
 define_endianness_function(wchar_t,            wchar_t_endianness)
-#ifndef FLOATING_TIME_T
+
 define_endianness_function(time_t,             time_t_endianness)
-#endif
-#ifndef FLOATING_CLOCK_T
 define_endianness_function(clock_t,            clock_t_endianness)
-#endif
 
 typedef void(*simple_func_ptr)(void);
 typedef double(*complex_func_ptr)(int*,char**);
@@ -1071,17 +1068,21 @@ int main(int argc, char **argv) {
     SHOW_INTEGER_TYPE(size_t, size_t_endianness(), 0, MY_SIZE_MAX);
     SHOW_INTEGER_TYPE(wchar_t, wchar_t_endianness(), MY_WCHAR_MIN, MY_WCHAR_MAX);
 
-#ifdef FLOATING_TIME_T
-    SHOW_FLOATING_TYPE(time_t, 0, 0, 0, 0.0, 0.0, 0.0);
-#else
-    SHOW_INTEGER_TYPE(time_t, time_t_endianness(), 0, 0);
-#endif
+    if ((time_t)1 / 2 == 0) {
+        SHOW_INTEGER_TYPE(time_t, time_t_endianness(), 0, 0);
+    }
+    else {
+        const static time_t dummy = 0.0;
+        SHOW_FLOATING_TYPE(time_t, 0, 0, 0, dummy, dummy, dummy);
+    }
 
-#ifdef FLOATING_CLOCK_T
-    SHOW_FLOATING_TYPE(clock_t, 0, 0, 0, 0.0, 0.0, 0.0);
-#else
-    SHOW_INTEGER_TYPE(clock_t, clock_t_endianness(), 0, 0);
-#endif
+    if ((clock_t)1 / 2 == 0) {
+        SHOW_INTEGER_TYPE(clock_t, clock_t_endianness(), 0, 0);
+    }
+    else {
+        const static clock_t dummy = 0.0;
+        SHOW_FLOATING_TYPE(clock_t, 0, 0, 0, dummy, dummy, dummy);
+    }
 
     SHOW_RAW_TYPE(struct tm);
 
