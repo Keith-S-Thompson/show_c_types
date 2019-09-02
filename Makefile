@@ -84,8 +84,5 @@ $(OUTPUT):   show_c_types
 	@echo "Creating $(OUTPUT)"
 	./show_c_types config.guess="`./config.guess`" compiler="`$(CC_VERSION)`" compile_command="$(CC)" > $(OUTPUT)
 
-test:           $(OUTPUT)
-	./test.pl $(OUTPUT)
-
 clean:
 	rm -f show_c_types show_c_types.o $(OUTPUT)
