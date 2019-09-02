@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Keith Thompson
+# Copyright (C) 2019 Keith Thompson
 
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -22,18 +22,19 @@
 
 # By default, we assume that the settings of certain predefined macros
 # (__STDC_VERSION__, etc.) determine which types are supported.  This
-# assumption is not always reliable; for example, some old compilers like
-# VAXC don't support signed char; others do support long long without
+# assumption is not always reliable.  For example, some old compilers like
+# VAXC don't support signed char.  Others do support long long without
 # claiming C99 conformance.
 #
 # You can override the default assumptions by defining any of the following
-# macros.  (The code only checks whether they're defined or not; their
+# macros.  (The code only checks whether they're defined or not.  heir
 # values are ignored.)
 #     ENABLE_SIGNED_CHAR        (signed char exists)
 #     ENABLE_LONG_LONG          (long long and unsigned long long exist)
 #     ENABLE_LONG_DOUBLE        (long double exists)
 #     ENABLE_STDINT_H           (a conforming <stdint.h> exists)
 #     ENABLE_STDBOOL_H          (a conforming <stdbool.h> exists)
+#     ENABLE_GENERIC            (generic selections (_Generic keyword) are supported)
 # You can specify that such types *don't* exist by defining any of the
 # following macros:
 #     DISABLE_SIGNED_CHAR
@@ -41,6 +42,7 @@
 #     DISABLE_LONG_DOUBLE
 #     DISABLE_STDINT_H
 #     DISABLE_STDBOOL_H
+#     DISABLE_GENERIC
 #
 # Update the definition of "CC" to set any of these macros.
 # For many C compilers, the "-D" option can be used for this purpose, e.g.:

@@ -113,6 +113,16 @@
 #    undef STDINT_H_EXISTS
 #endif
 
+#if defined(DISABLE_GENERIC)
+#    undef GENERIC_SELECTION_SUPPORTED
+#elif defined(ENABLE_GENERIC)
+#    define GENERIC_SELECTION_SUPPORTED
+#elif __STDC_VERSION__ >= 201112L
+#    define GENERIC_SELECTION_SUPPORTED
+#else
+#    undef GENERIC_SELECTION_SUPPORTED
+#endif
+
 #ifdef STDINT_H_EXISTS
 #include <stdint.h>
 #endif
@@ -170,7 +180,31 @@ const static long double ld_one_million   = 1.0e6L;
 enum small_enum { se_zero, se_one, se_two };
 enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
 
-#define SHOW_INTEGER_TYPE(type, endianness, min, max)                 \
+#ifdef GENERIC_SELECTION_SUPPORTED
+    #define UNDERLYING_TYPE_NAME(type) \
+        _Generic ((type)0, \
+            char: "char", \
+            unsigned char: "unsigned char", \
+            signed char: "signed char", \
+            unsigned short: "unsigned short", \
+            short: "short", \
+            unsigned int: "unsigned int", \
+            int: "int", \
+            unsigned long: "unsigned long", \
+            long: "long", \
+            unsigned long long: "unsigned long long", \
+            long long: "long long", \
+            float: "float", \
+            double: "double", \
+            long double: "long double", \
+            _Bool: "_Bool", \
+            default: "unrecognized" \
+        )
+#else
+    #define UNDERLYING_TYPE_NAME(type) "unable to determine"
+#endif
+
+#define SHOW_INTEGER_TYPE(type, endianness, min, max, show_underlying)\
     do {                                                              \
         const int size = sizeof(type) * CHAR_BIT;                     \
         const int align = ALIGNOF(type) * CHAR_BIT;                   \
@@ -205,10 +239,14 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         else {                                                        \
             huge_integer = true;                                      \
         }                                                             \
+        if (show_underlying) {                                        \
+            printf("    underlying_type = %s\n",                      \
+                   UNDERLYING_TYPE_NAME(type));                       \
+        }                                                             \
         putchar('\n');                                                \
     } while(0)
 
-#define SHOW_FLOATING_TYPE(type, mant_dig, min_exp, max_exp, one, minus_sixteen, one_million) \
+#define SHOW_FLOATING_TYPE(type, mant_dig, min_exp, max_exp, one, minus_sixteen, one_million, show_underlying) \
     do {                                                             \
         const int size = sizeof(type) * CHAR_BIT;                    \
         const int align = ALIGNOF(type) * CHAR_BIT;                  \
@@ -244,6 +282,10 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
         else {                                                       \
             huge_float = true;                                       \
         }                                                            \
+        if (show_underlying) {                                       \
+            printf("    underlying_type = %s\n",                     \
+                   UNDERLYING_TYPE_NAME(type));                      \
+        }                                                            \
         putchar('\n');                                               \
     } while(0)
 
@@ -251,7 +293,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
     do {                                               \
         const int size = sizeof(type) * CHAR_BIT;      \
         const int align = ALIGNOF(type) * CHAR_BIT;    \
-        printf("[%s]\n", name);                        \
+        printf("[%s]\n", space_to_hyphen(#type));      \
         puts("    kind = type");                       \
         printf("    size = %d\n", size);               \
         printf("    alignment = %d\n", align);         \
@@ -853,8 +895,9 @@ static void show_float_h(void) {
 /* Not reentrant */
 static char *space_to_hyphen(const char *s) {
     static char result[100];
+    int i;
     strcpy(result, s);
-    for (int i = 0; result[i] != '\0'; i ++) {
+    for (i = 0; result[i] != '\0'; i ++) {
         if (result[i] == ' ') {
             result[i] = '-';
         }
@@ -1029,59 +1072,59 @@ int main(int argc, char **argv) {
     show_stdint_h();
 
 #ifdef STDBOOL_H_EXISTS
-    SHOW_INTEGER_TYPE(bool, bool_endianness(), 0, 0);
+    SHOW_INTEGER_TYPE(bool, bool_endianness(), 0, 0, false);
 #endif
 
-    SHOW_INTEGER_TYPE(enum small_enum, small_enum_endianness(), 0, 0);
-    SHOW_INTEGER_TYPE(enum small_signed_enum, small_signed_enum_endianness(), 0, 0);
+    SHOW_INTEGER_TYPE(enum small_enum, small_enum_endianness(), 0, 0, true);
+    SHOW_INTEGER_TYPE(enum small_signed_enum, small_signed_enum_endianness(), 0, 0, true);
 
-    SHOW_INTEGER_TYPE(char, char_endianness(), CHAR_MIN, CHAR_MAX);
+    SHOW_INTEGER_TYPE(char, char_endianness(), CHAR_MIN, CHAR_MAX, false);
 #ifdef SIGNED_CHAR_EXISTS
-    SHOW_INTEGER_TYPE(signed char, signed_char_endianness(), SCHAR_MIN, SCHAR_MAX);
+    SHOW_INTEGER_TYPE(signed char, signed_char_endianness(), SCHAR_MIN, SCHAR_MAX, false);
 #endif
-    SHOW_INTEGER_TYPE(unsigned char, unsigned_char_endianness(), 0, UCHAR_MAX);
+    SHOW_INTEGER_TYPE(unsigned char, unsigned_char_endianness(), 0, UCHAR_MAX, false);
 
-    SHOW_INTEGER_TYPE(short, short_endianness(), SHRT_MIN, SHRT_MAX);
-    SHOW_INTEGER_TYPE(unsigned short, unsigned_short_endianness(), 0, USHRT_MAX);
+    SHOW_INTEGER_TYPE(short, short_endianness(), SHRT_MIN, SHRT_MAX, false);
+    SHOW_INTEGER_TYPE(unsigned short, unsigned_short_endianness(), 0, USHRT_MAX, false);
 
-    SHOW_INTEGER_TYPE(int, int_endianness(), INT_MIN, INT_MAX);
-    SHOW_INTEGER_TYPE(unsigned, unsigned_endianness(), 0, UINT_MAX);
+    SHOW_INTEGER_TYPE(int, int_endianness(), INT_MIN, INT_MAX, false);
+    SHOW_INTEGER_TYPE(unsigned, unsigned_endianness(), 0, UINT_MAX, false);
 
-    SHOW_INTEGER_TYPE(long, long_endianness(), LONG_MIN, LONG_MAX);
-    SHOW_INTEGER_TYPE(unsigned long, unsigned_long_endianness(), 0, ULONG_MAX);
+    SHOW_INTEGER_TYPE(long, long_endianness(), LONG_MIN, LONG_MAX, false);
+    SHOW_INTEGER_TYPE(unsigned long, unsigned_long_endianness(), 0, ULONG_MAX, false);
 
 #ifdef LONG_LONG_EXISTS
-    SHOW_INTEGER_TYPE(long long, long_long_endianness(), MY_LLONG_MIN, MY_LLONG_MAX);
-    SHOW_INTEGER_TYPE(unsigned long long, unsigned_long_long_endianness(), 0, MY_ULLONG_MAX);
+    SHOW_INTEGER_TYPE(long long, long_long_endianness(), MY_LLONG_MIN, MY_LLONG_MAX, false);
+    SHOW_INTEGER_TYPE(unsigned long long, unsigned_long_long_endianness(), 0, MY_ULLONG_MAX, false);
 #endif
 
     SHOW_FLOATING_TYPE(float,       FLT_MANT_DIG,  FLT_MIN_EXP,  FLT_MAX_EXP,
-                                    f_one, f_minus_sixteen, f_one_million);
+                                    f_one, f_minus_sixteen, f_one_million, false);
     SHOW_FLOATING_TYPE(double,      DBL_MANT_DIG,  DBL_MIN_EXP,  DBL_MAX_EXP,
-                                    d_one, d_minus_sixteen, d_one_million);
+                                    d_one, d_minus_sixteen, d_one_million, false);
 #ifdef LONG_DOUBLE_EXISTS
     SHOW_FLOATING_TYPE(long double, LDBL_MANT_DIG, LDBL_MIN_EXP, LDBL_MAX_EXP,
-                                    ld_one, ld_minus_sixteen, ld_one_million);
+                                    ld_one, ld_minus_sixteen, ld_one_million, false);
 #endif
 
-    SHOW_INTEGER_TYPE(ptrdiff_t, ptrdiff_t_endianness(), MY_PTRDIFF_MIN, MY_PTRDIFF_MAX);
-    SHOW_INTEGER_TYPE(size_t, size_t_endianness(), 0, MY_SIZE_MAX);
-    SHOW_INTEGER_TYPE(wchar_t, wchar_t_endianness(), MY_WCHAR_MIN, MY_WCHAR_MAX);
+    SHOW_INTEGER_TYPE(ptrdiff_t, ptrdiff_t_endianness(), MY_PTRDIFF_MIN, MY_PTRDIFF_MAX, true);
+    SHOW_INTEGER_TYPE(size_t, size_t_endianness(), 0, MY_SIZE_MAX, true);
+    SHOW_INTEGER_TYPE(wchar_t, wchar_t_endianness(), MY_WCHAR_MIN, MY_WCHAR_MAX, true);
 
     if ((time_t)1 / 2 == 0) {
-        SHOW_INTEGER_TYPE(time_t, time_t_endianness(), 0, 0);
+        SHOW_INTEGER_TYPE(time_t, time_t_endianness(), 0, 0, true);
     }
     else {
         const static time_t dummy = 0.0;
-        SHOW_FLOATING_TYPE(time_t, 0, 0, 0, dummy, dummy, dummy);
+        SHOW_FLOATING_TYPE(time_t, 0, 0, 0, dummy, dummy, dummy, true);
     }
 
     if ((clock_t)1 / 2 == 0) {
-        SHOW_INTEGER_TYPE(clock_t, clock_t_endianness(), 0, 0);
+        SHOW_INTEGER_TYPE(clock_t, clock_t_endianness(), 0, 0, true);
     }
     else {
         const static clock_t dummy = 0.0;
-        SHOW_FLOATING_TYPE(clock_t, 0, 0, 0, dummy, dummy, dummy);
+        SHOW_FLOATING_TYPE(clock_t, 0, 0, 0, dummy, dummy, dummy, true);
     }
 
     SHOW_RAW_TYPE(struct tm);
