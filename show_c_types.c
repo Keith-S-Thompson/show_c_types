@@ -302,7 +302,7 @@ enum small_signed_enum { sse_minus_one = -1, sse_zero, sse_one };
 
 #define SHOW_RAW_TYPE(type) SHOW_RAW_TYPE_WITH_NAME(type, #type)
 
-#define define_endianness_function(the_type, func_name) \
+#define DEFINE_ENDIANNESS_FUNCTION(the_type, func_name) \
 static char *func_name(void) {           \
     unsigned char arr[sizeof(the_type)]; \
                                          \
@@ -326,43 +326,43 @@ static char *func_name(void) {           \
 }
 
 #ifdef STDBOOL_H_EXISTS
-define_endianness_function(bool,               bool_endianness)
+DEFINE_ENDIANNESS_FUNCTION(bool,               bool_endianness)
 #endif
 
-define_endianness_function(enum small_enum,    small_enum_endianness)
-define_endianness_function(enum small_signed_enum, small_signed_enum_endianness)
+DEFINE_ENDIANNESS_FUNCTION(enum small_enum,    small_enum_endianness)
+DEFINE_ENDIANNESS_FUNCTION(enum small_signed_enum, small_signed_enum_endianness)
 
-define_endianness_function(char,               char_endianness)
+DEFINE_ENDIANNESS_FUNCTION(char,               char_endianness)
 #ifdef SIGNED_CHAR_EXISTS
-define_endianness_function(signed char,        signed_char_endianness)
+DEFINE_ENDIANNESS_FUNCTION(signed char,        signed_char_endianness)
 #endif
-define_endianness_function(unsigned char,      unsigned_char_endianness)
+DEFINE_ENDIANNESS_FUNCTION(unsigned char,      unsigned_char_endianness)
 
-define_endianness_function(short,              short_endianness)
-define_endianness_function(unsigned short,     unsigned_short_endianness)
+DEFINE_ENDIANNESS_FUNCTION(short,              short_endianness)
+DEFINE_ENDIANNESS_FUNCTION(unsigned short,     unsigned_short_endianness)
 
-define_endianness_function(int,                int_endianness)
-define_endianness_function(unsigned,           unsigned_endianness)
+DEFINE_ENDIANNESS_FUNCTION(int,                int_endianness)
+DEFINE_ENDIANNESS_FUNCTION(unsigned,           unsigned_endianness)
 
-define_endianness_function(long,               long_endianness)
-define_endianness_function(unsigned long,      unsigned_long_endianness)
+DEFINE_ENDIANNESS_FUNCTION(long,               long_endianness)
+DEFINE_ENDIANNESS_FUNCTION(unsigned long,      unsigned_long_endianness)
 
 #ifdef LONG_LONG_EXISTS
-define_endianness_function(long long,          long_long_endianness)
-define_endianness_function(unsigned long long, unsigned_long_long_endianness)
+DEFINE_ENDIANNESS_FUNCTION(long long,          long_long_endianness)
+DEFINE_ENDIANNESS_FUNCTION(unsigned long long, unsigned_long_long_endianness)
 #endif
 
 #ifdef STDINT_H_EXISTS
-define_endianness_function(intmax_t,           intmax_t_endianness)
-define_endianness_function(uintmax_t,          uintmax_t_endianness)
+DEFINE_ENDIANNESS_FUNCTION(intmax_t,           intmax_t_endianness)
+DEFINE_ENDIANNESS_FUNCTION(uintmax_t,          uintmax_t_endianness)
 #endif
 
-define_endianness_function(ptrdiff_t,          ptrdiff_t_endianness)
-define_endianness_function(size_t,             size_t_endianness)
-define_endianness_function(wchar_t,            wchar_t_endianness)
+DEFINE_ENDIANNESS_FUNCTION(ptrdiff_t,          ptrdiff_t_endianness)
+DEFINE_ENDIANNESS_FUNCTION(size_t,             size_t_endianness)
+DEFINE_ENDIANNESS_FUNCTION(wchar_t,            wchar_t_endianness)
 
-define_endianness_function(time_t,             time_t_endianness)
-define_endianness_function(clock_t,            clock_t_endianness)
+DEFINE_ENDIANNESS_FUNCTION(time_t,             time_t_endianness)
+DEFINE_ENDIANNESS_FUNCTION(clock_t,            clock_t_endianness)
 
 typedef void(*simple_func_ptr)(void);
 typedef double(*complex_func_ptr)(int*,char**);
@@ -453,6 +453,7 @@ static char *hex_image(const void *base, size_t size) {
         result[out_index++] = hex[data[i] % 16];
     }
 
+    printf(">>> Writing to result[%zu] of %zu\n", out_index, 2 * size + 1);
     result[out_index] = '\0';
 
     return result;
