@@ -453,7 +453,6 @@ static char *hex_image(const void *base, size_t size) {
         result[out_index++] = hex[data[i] % 16];
     }
 
-    printf(">>> Writing to result[%zu] of %zu\n", out_index, 2 * size + 1);
     result[out_index] = '\0';
 
     return result;
