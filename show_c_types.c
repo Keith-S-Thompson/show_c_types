@@ -165,16 +165,16 @@ static bool huge_integer = false;
 static bool float_sizes[MAX_SIZE + 1] = { false };
 static bool huge_float = false;
 
-const static float       f_one            =   1.0F;
-const static float       f_minus_sixteen  = -16.0F;
-const static float       f_one_million    = 1.0e6F;
-const static double      d_one            =   1.0;
-const static double      d_minus_sixteen  = -16.0;
-const static double      d_one_million    = 1.0e6;
+static const float       f_one            =   1.0F;
+static const float       f_minus_sixteen  = -16.0F;
+static const float       f_one_million    = 1.0e6F;
+static const double      d_one            =   1.0;
+static const double      d_minus_sixteen  = -16.0;
+static const double      d_one_million    = 1.0e6;
 #ifdef LONG_DOUBLE_EXISTS
-const static long double ld_one           =   1.0L;
-const static long double ld_minus_sixteen = -16.0L;
-const static long double ld_one_million   = 1.0e6L;
+static const long double ld_one           =   1.0L;
+static const long double ld_minus_sixteen = -16.0L;
+static const long double ld_one_million   = 1.0e6L;
 #endif
 
 enum small_enum { se_zero, se_one, se_two };
@@ -1115,7 +1115,7 @@ int main(int argc, char **argv) {
         SHOW_INTEGER_TYPE(time_t, time_t_endianness(), 0, 0, true);
     }
     else {
-        const static time_t dummy = 0.0;
+        static const time_t dummy = 0.0;
         SHOW_FLOATING_TYPE(time_t, 0, 0, 0, dummy, dummy, dummy, true);
     }
 
@@ -1123,7 +1123,7 @@ int main(int argc, char **argv) {
         SHOW_INTEGER_TYPE(clock_t, clock_t_endianness(), 0, 0, true);
     }
     else {
-        const static clock_t dummy = 0.0;
+        static const clock_t dummy = 0.0;
         SHOW_FLOATING_TYPE(clock_t, 0, 0, 0, dummy, dummy, dummy, true);
     }
 
