@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Keith Thompson
+ * Copyright (C) 2021 Keith Thompson
  */
 
 /*
@@ -38,12 +38,12 @@
 #include <float.h>
 #include <time.h>
 
-#define SHOW_C_TYPES_VERSION "2019-09-02"
+#define SHOW_C_TYPES_VERSION "2021-08-01"
 /*
  * The version is the date in YYYY-MM-DD format.
  * If you modify this program, please update this definition.
  * If you're not the original author, please append something to
- * the version string such as "2012-10-22-yourname".
+ * the version string such as "2021-08-01-yourname".
  */
 
 /*
@@ -843,35 +843,51 @@ static void show_float_h(void) {
 
     printf("    FLT_DIG = %d\n", FLT_DIG);
     printf("    DBL_DIG = %d\n", DBL_DIG);
+#ifdef LONG_DOUBLE_EXISTS
     printf("    LDBL_DIG = %d\n", LDBL_DIG);
+#endif
 
     printf("    FLT_MIN_EXP = %d\n", FLT_MIN_EXP);
     printf("    DBL_MIN_EXP = %d\n", DBL_MIN_EXP);
+#ifdef LONG_DOUBLE_EXISTS
     printf("    LDBL_MIN_EXP = %d\n", LDBL_MIN_EXP);
+#endif
 
     printf("    FLT_MIN_10_EXP = %d\n", FLT_MIN_10_EXP);
     printf("    DBL_MIN_10_EXP = %d\n", DBL_MIN_10_EXP);
+#ifdef LONG_DOUBLE_EXISTS
     printf("    LDBL_MIN_10_EXP = %d\n", LDBL_MIN_10_EXP);
+#endif
 
     printf("    FLT_MAX_EXP = %d\n", FLT_MAX_EXP);
     printf("    DBL_MAX_EXP = %d\n", DBL_MAX_EXP);
+#ifdef LONG_DOUBLE_EXISTS
     printf("    LDBL_MAX_EXP = %d\n", LDBL_MAX_EXP);
+#endif
 
     printf("    FLT_MAX_10_EXP = %d\n", FLT_MAX_10_EXP);
     printf("    DBL_MAX_10_EXP = %d\n", DBL_MAX_10_EXP);
+#ifdef LONG_DOUBLE_EXISTS
     printf("    LDBL_MAX_10_EXP = %d\n", LDBL_MAX_10_EXP);
+#endif
 
     printf("    FLT_MAX = %e\n", FLT_MAX);
     printf("    DBL_MAX = %e\n", DBL_MAX);
+#ifdef LONG_DOUBLE_EXISTS
     printf("    LDBL_MAX = %Le\n", LDBL_MAX);
+#endif
 
     printf("    FLT_EPSILON = %e\n", FLT_EPSILON);
     printf("    DBL_EPSILON = %e\n", DBL_EPSILON);
+#ifdef LONG_DOUBLE_EXISTS
     printf("    LDBL_EPSILON = %Le\n", LDBL_EPSILON);
+#endif
 
     printf("    FLT_MIN = %e\n", FLT_MIN);
     printf("    DBL_MIN = %e\n", DBL_MIN);
+#ifdef LONG_DOUBLE_EXISTS
     printf("    LDBL_MIN = %Le\n", LDBL_MIN);
+#endif
 
 #ifdef FLT_TRUE_MIN
     printf("    FLT_TRUE_MIN = %e\n", FLT_TRUE_MIN);
