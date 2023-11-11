@@ -1,4 +1,4 @@
-Copyright (C) 2018 Keith Thompson
+Copyright (C) 2023 Keith Thompson
 
 `show_c_types` is released under GPL version 2 or later.  See the
 header comments in `show_c_types.c` and `Makefile` and the file
@@ -6,11 +6,10 @@ header comments in `show_c_types.c` and `Makefile` and the file
 
 This program uses a collection of very ugly macros to determine the
 characteristics of predefined C types.  The results are printed to
-stdout in "ini" format, described in https://en.wikipedia.org/wiki/INI_file
+stdout in "ini" format, described in <https://en.wikipedia.org/wiki/INI_file>.
 
-It's based on an earlier unreleased program that prints similar
-information in plain text, and a later released version that printed
-its output in something close to JSON.
+Earlier versions of this program printed similar information in plain text
+(not released), and then in something close to JSON.
 
 You may need to modify the `Makefile` to adjust the compiler command
 as appropriate for your system, or you may need to build and execute
@@ -29,8 +28,8 @@ or
 
     make output
 
-his should generate a new file with a `.ini` suffix.  (Run `make
-clean` first if necessary, e.g., if you've edited the `Makefile`.)
+This should generate a new file with a `.ini` suffix.
+(Run `make clean` first if necessary, e.g., if you've edited the `Makefile`.)
 
 If you run the `show_c_types` program manually, it will write
 its results to standard output.  The program accepts command-line
@@ -42,7 +41,7 @@ self-explanatory, but they're subject to change in future releases.
 The output consists of a sequence of sections.
 
 The "configuration" record shows the version number of this program,
-currently `"2018-12-02"`.
+currently `"2023-11-10"`.
 
 The `results_0` directory (previously named `old-results`) contains
 results from an older version of this program that printed results

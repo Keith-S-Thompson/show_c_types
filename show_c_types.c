@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Keith Thompson
+ * Copyright (C) 2023 Keith Thompson
  */
 
 /*
@@ -38,12 +38,12 @@
 #include <float.h>
 #include <time.h>
 
-#define SHOW_C_TYPES_VERSION "2021-08-01"
+#define SHOW_C_TYPES_VERSION "2023-11-10"
 /*
  * The version is the date in YYYY-MM-DD format.
  * If you modify this program, please update this definition.
  * If you're not the original author, please append something to
- * the version string such as "2021-08-01-yourname".
+ * the version string, for example as "2023-11-10-yourname".
  */
 
 /*
