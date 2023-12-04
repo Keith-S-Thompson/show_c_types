@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Keith Thompson
+# Copyright (C) 2023 Keith Thompson
 
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-# Adjust the definition of "CC" and "CC_VERSION" as needed for your system.
+# Adjust the definition of "CC" and "CC_VERSION_COMMAND" as needed for your system.
 # Enable C99 or higher conformance if possible.
 # If you want to add more information to the $(config.guess).ini file,
 # add arguments to the "./show_c_types" command line.
@@ -27,7 +27,7 @@
 # claiming C99 conformance.
 #
 # You can override the default assumptions by defining any of the following
-# macros.  (The code only checks whether they're defined or not.  heir
+# macros.  (The code only checks whether they're defined or not.  Their
 # values are ignored.)
 #     ENABLE_SIGNED_CHAR        (signed char exists)
 #     ENABLE_LONG_LONG          (long long and unsigned long long exist)
@@ -61,11 +61,11 @@ CC=gcc -std=c11 -pedantic
 # CC=cc -Xc -xc99=%all,no%lib -m32 -DENABLE_LONG_LONG
 # CC=cc -Xc -xc99=%all,no%lib -m64 -DENABLE_LONG_LONG
 
-# CC_VERSION is a command that prints the name and version of the
+# CC_VERSION_COMMAND is a command that prints the name and version of the
 # compiler, preferably on one line.
-CC_VERSION=$(CC) --version | head -n 1
+CC_VERSION_COMMAND=$(CC) --version | head -n 1
 # For Solaris with cc:
-# CC_VERSION=cc -V 2>&1 | head -n 1
+# CC_VERSION_COMMAND=cc -V 2>&1 | head -n 1
 
 # "make" with no arguments creates the executable and runs it, creating
 # "$(./result-file-name).ini", for example, "i686-pc-linux-gnu.ini"
@@ -82,7 +82,7 @@ show_c_types.o:	show_c_types.c
 
 $(OUTPUT):   show_c_types
 	@echo "Creating $(OUTPUT)"
-	./show_c_types config.guess="`./config.guess`" compiler="$(CC_VERSION)" compile_command="$(CC)" > $(OUTPUT)
+	./show_c_types config.guess="`./config.guess`" compiler="`$(CC_VERSION_COMMAND)`" compile_command="$(CC)" > $(OUTPUT)
 
 clean:
 	rm -f show_c_types show_c_types.o show_c_types.obj $(OUTPUT)

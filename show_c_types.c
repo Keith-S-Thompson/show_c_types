@@ -38,7 +38,7 @@
 #include <float.h>
 #include <time.h>
 
-#define SHOW_C_TYPES_VERSION "2023-11-10"
+#define SHOW_C_TYPES_VERSION "2023-12-03"
 /*
  * The version is the date in YYYY-MM-DD format.
  * If you modify this program, please update this definition.
