@@ -868,7 +868,11 @@ static void show_float_h(void) {
     printf("    FLT_MAX_10_EXP = %d\n", FLT_MAX_10_EXP);
     printf("    DBL_MAX_10_EXP = %d\n", DBL_MAX_10_EXP);
 #ifdef LONG_DOUBLE_EXISTS
+#ifdef LDBL_MAX_10_EXP
     printf("    LDBL_MAX_10_EXP = %d\n", LDBL_MAX_10_EXP);
+#else
+    printf("    LDBL_MAX_10_EXP = undefined\n");
+#endif
 #endif
 
     printf("    FLT_MAX = %e\n", FLT_MAX);
