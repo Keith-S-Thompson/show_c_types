@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Keith Thompson
+ * Copyright (C) 2024 Keith Thompson
  */
 
 /*
@@ -424,7 +424,7 @@ static char *unsigned_image(longest_unsigned n) {
     return result;
 }
 
-static void check_size(char *kind, bool sizes[], int size) {
+static void check_size(const char *kind, bool sizes[], int size) {
     if (! sizes[size]) {
         printf("[comment-%d]\n", comment_index++);
         printf("    comment = \"There is no %d-bit %s type\"\n", size, kind);
